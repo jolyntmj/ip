@@ -1,10 +1,34 @@
+import java.util.Scanner;
+import java.util.List;
+import java.util.ArrayList;
+
 public class Duke {
     public static void main(String[] args) {
-        String logo = " ____        _        \n"
-                + "|  _ \\ _   _| | _____ \n"
-                + "| | | | | | | |/ / _ \\\n"
-                + "| |_| | |_| |   <  __/\n"
-                + "|____/ \\__,_|_|\\_\\___|\n";
-        System.out.println("Hello from\n" + logo);
+        new Duke().run();
+    }
+
+    public void run() {
+        printLine();
+        printName();
+        printGreeting();
+        printLine();
+        printGoodbye();
+        printLine();
+    }
+
+    private void printLine() {
+        System.out.println("--------------------------------");
+    }
+
+    private void printName() {
+        System.out.println("Hello! I am sealriously");
+    }
+
+    private void printGreeting() {
+        System.out.println("What can I do for you?");
+    }
+
+    private void printGoodbye() {
+        System.out.println("Bye. See you soon!");
     }
 }
