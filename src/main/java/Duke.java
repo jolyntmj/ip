@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class Duke {
+    private List<String> text = new ArrayList<>();
     private Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -17,9 +18,7 @@ public class Duke {
         String input = scanner.nextLine();
         
         while(!input.equalsIgnoreCase("bye")) {
-            printLine();
-            System.out.println("You said: " + input);
-            printLine();
+            handleInput(input);
             input = scanner.nextLine();
         } 
         printLine();
@@ -43,4 +42,17 @@ public class Duke {
         System.out.println("Bye. See you soon!");
     }
 
+    public void handleInput(String input) {
+        printLine();
+        System.out.println("You said: " + input);
+        printLine();
+
+        if (!input.equalsIgnoreCase("list")) {
+            text.add(input);
+        } else {
+            for(int i=0; i < text.size(); i++ ) {
+                System.out.println((i+1) + ")" + text.get(i));
+            }
+        }
+    } 
 }
