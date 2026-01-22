@@ -32,7 +32,7 @@ public class Duke {
     }
 
     private void printLine() {
-        System.out.println("--------------------------------");
+        System.out.println("-----------------------------------------------------------------");
     }
 
     private void printName() {
@@ -71,7 +71,8 @@ public class Duke {
         }
         }
 
-    public void printList() {                               
+    public void printList() { 
+        printLine();                              
         for(int i=0; i < tasks.size(); i++ ) {
             Task t = tasks.get(i);
             System.out.println((i+1) + ". " + t.getType() + "[" + t.getStatusIcon() + "] " + t.getDescription());
@@ -107,6 +108,7 @@ public class Duke {
         Task t = tasks.get(index);
         t.done();
 
+        printLine();
         System.out.println("Good job for completing! I will mark it as done.");
         System.out.println("Please check:");
         System.out.println("[" + t.getStatusIcon() + "] " + t.getDescription());
@@ -136,6 +138,7 @@ public class Duke {
         String description = parts[0];
         String by = parts[1];
 
+        printLine();
         System.out.println("Alright. Added to task(s)");
         System.out.println("Please Check:");
         System.out.println(new Deadline(description, by).toString());
@@ -157,6 +160,7 @@ public class Duke {
         String start = secondParting[0];
         String end = secondParting[1];
 
+        printLine();
         System.out.println("Alright. Added to task(s)");
         System.out.println("Please Check:");
         System.out.println(new Event(description, start, end).toString());
