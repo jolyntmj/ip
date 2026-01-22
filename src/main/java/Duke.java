@@ -50,24 +50,36 @@ public class Duke {
     public void handleInput(String input) {
 
         if (!input.equalsIgnoreCase("list")) {
+            if (input.toLowerCase().startsWith("todo")) {
+                todo(input);
+            }
+
+            if (input.toLowerCase().startsWith("deadline")) {
+                deadline(input);
+            }
+
+            if (input.toLowerCase().startsWith("event")) {
+                event(input);
+            }
+
             if (input.toLowerCase().startsWith("mark ")) {
                 mark(input);
-            } else {
-                printLine();
-                System.out.println("added: " + input);
-                printLine();
-                tasks.add(new Task(input));
-            }
+            } 
+
         } else {
             printList();
         }
-    }
+        }
 
     public void printList() {                               
         for(int i=0; i < tasks.size(); i++ ) {
             Task t = tasks.get(i);
-            System.out.println((i+1) + ". [" + t.getStatusIcon() + "] " + t.getDescription());
+            System.out.println((i+1) + ". " + t.getType() + "[" + t.getStatusIcon() + "] " + t.getDescription());
         }
+        printLine();
+    }
+    public void split(String input) {
+        
     }
 
     public void mark(String input) {
@@ -101,8 +113,57 @@ public class Duke {
         printLine();
 
     }
-    
-    public List<Task> getList() {
-        return tasks;
+
+    public void todo(String input) {
+        String[] parts = input.split(" ", 2);
+        String description = parts[1];
+
+        printLine();
+        System.out.println("Alright. Added to task(s)");
+        System.out.println("Please Check:");
+        System.out.println(new Todo(description).toString());
+        int size = tasks.size();
+        System.out.println("REMINDER: " + (size+1) + " pending task(s). Please complete it soon. Good Luck!");
+        printLine();
+
+        tasks.add(new Todo(description));
+    }
+
+    public void deadline(String input) {
+        String remainder = input.substring(9).trim();
+
+        String[] parts = remainder.split(" /by", 2);
+        String description = parts[0];
+        String by = parts[1];
+
+        System.out.println("Alright. Added to task(s)");
+        System.out.println("Please Check:");
+        System.out.println(new Deadline(description, by).toString());
+        int size = tasks.size();
+        System.out.println("REMINDER: " + (size+1) + " pending task(s). Please complete it soon. Good Luck!");
+        printLine();
+
+        tasks.add(new Deadline(description, by));
+    }
+
+    public void event(String input) {
+        String remainder = input.substring(5).trim();
+
+        String[] parts = remainder.split(" /from", 2);
+        String description = parts[0];
+        String firstSplit = parts[1];
+
+        String[] secondParting = firstSplit.split(" /to", 2);
+        String start = secondParting[0];
+        String end = secondParting[1];
+
+        System.out.println("Alright. Added to task(s)");
+        System.out.println("Please Check:");
+        System.out.println(new Event(description, start, end).toString());
+        int size = tasks.size(); 
+        System.out.println("REMINDER: " + (size+1) + " pending task(s). Please complete it soon. Good Luck!");
+        printLine();
+
+        tasks.add(new Event(description, start, end));
     }
 }
