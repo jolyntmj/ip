@@ -79,7 +79,7 @@ Please Check:
 REMINDER: 4 pending task(s). Please complete it soon. Good Luck!
 -----------------------------------------------------------------
 -----------------------------------------------------------------
-Unknown command. Please enter the correct command. Eg. event project meeting /from Mon 2pm /to 4pm
+Please enter a task number to mark.
 -----------------------------------------------------------------
 -----------------------------------------------------------------
 Task number must be a number.

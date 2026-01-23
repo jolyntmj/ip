@@ -67,8 +67,10 @@ public class Duke {
             deadline(input);
         } else if (input.toLowerCase().startsWith("event")) {
             event(input);
-        } else if (input.toLowerCase().startsWith("mark ")) {
+        } else if (input.toLowerCase().startsWith("mark")) {
             mark(input);
+        } else if (input.toLowerCase().startsWith("delete")) {
+            delete(input);
         } else {
             throw new DukeException("Unknown command. Please enter the correct command. Eg. event project meeting /from Mon 2pm /to 4pm");
         }
@@ -237,5 +239,39 @@ public class Duke {
         printLine();
 
         tasks.add(new Event(description, start, end));
+    }
+
+    public void delete(String input) throws DukeException {
+        String[] parts = input.split(" ");
+
+        if (parts.length == 1) {
+            throw new DukeException("Please enter a task number to delete.");
+        }
+
+        int index;
+        
+        if (parts.length < 2 || parts[1].trim().isEmpty()) {
+            throw new DukeException("Please specify a task number to delete.");
+        }
+
+        try {
+            index = Integer.parseInt(parts[1].trim()) - 1;
+        } catch (NumberFormatException e) {
+            throw new DukeException("Task number must be a number.");
+        }
+    
+        if (index < 0 || index >= tasks.size()) {
+            throw new DukeException("That task number does not exist.");
+        }
+
+        Task removedTask = tasks.remove(index);
+
+        printLine();
+        System.out.println("Alright. Tasked removed.");
+        System.out.println("Please check:");
+        System.out.println(" " + removedTask);
+        System.out.println("REMINDER: " + tasks.size() + " pending task(s). Please complete it soon. Good Luck!");
+        printLine();
+
     }
 }
