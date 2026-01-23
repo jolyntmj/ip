@@ -1,10 +1,10 @@
-# Duke User Guide
+# Sealriously User Guide
 
 // Update the title above to match the actual product name
 
 // Product screenshot goes here
 
-// Product intro goes here
+This is a tool to help organise your daily task in life.
 
 ## Adding deadlines
 
