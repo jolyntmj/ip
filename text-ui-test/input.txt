@@ -1,7 +1,30 @@
-todo borrow book
-deadline return book /by Sunday
-event project meeting /from Mon 2pm /to 4pm
 list
+blah
+mrak 1
+todo
+todo    
+todo borrow book
+todo read book
+deadline
+deadline return book
+deadline /by Sunday
+deadline return book /by
+deadline return book /by Sunday
+event
+event project meeting
+event project meeting /to 4pm
+event /from Mon 2pm
+event /to 4pm
+event /from Mon 2pm /to 4pm
+event project meeting /from Mon 2pm
+event project meeting /from Mon 2pm /to
+event project meeting /from /to 4pm
+event project meeting /from Mon 2pm /to 4pm
+mark
+mark abc
+mark 0
+mark -1
+mark 999
 mark 2
 list
 bye
