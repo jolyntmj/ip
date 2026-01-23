@@ -59,20 +59,18 @@ public class Duke {
 
         if (input.isEmpty()) {
             throw new DukeException("Please enter a command.");
-        } else if (input.equalsIgnoreCase("list")) {
-            printList();
-        } else if (input.toLowerCase().startsWith("todo")) {
-            todo(input);
-        } else if (input.toLowerCase().startsWith("deadline")) {
-            deadline(input);
-        } else if (input.toLowerCase().startsWith("event")) {
-            event(input);
-        } else if (input.toLowerCase().startsWith("mark")) {
-            mark(input);
-        } else if (input.toLowerCase().startsWith("delete")) {
-            delete(input);
-        } else {
-            throw new DukeException("Unknown command. Please enter the correct command. Eg. event project meeting /from Mon 2pm /to 4pm");
+        } CommandType command = parseCommandType(input);
+
+        switch (command) {
+        case LIST -> printList();
+        case TODO -> todo(input);
+        case DEADLINE -> deadline(input);
+        case EVENT -> event(input);
+        case MARK -> mark(input);
+        case DELETE -> delete(input);
+        case BYE -> { /* do nothing here; your while-loop exits on bye */ }
+        case UNKNOWN -> throw new DukeException(
+                "Unknown command. Please enter the correct command. Eg. event project meeting /from Mon 2pm /to 4pm");
         }
     }
 
@@ -274,4 +272,20 @@ public class Duke {
         printLine();
 
     }
+    
+    private CommandType parseCommandType(String input) {
+        String firstWord = input.trim().split("\\s+", 2)[0].toLowerCase();
+    
+        return switch (firstWord) {
+        case "list" -> CommandType.LIST;
+        case "todo" -> CommandType.TODO;
+        case "deadline" -> CommandType.DEADLINE;
+        case "event" -> CommandType.EVENT;
+        case "mark" -> CommandType.MARK;
+        case "delete" -> CommandType.DELETE;
+        case "bye" -> CommandType.BYE;
+        default -> CommandType.UNKNOWN;
+        };
+    }
+    
 }
