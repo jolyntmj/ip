@@ -6,11 +6,23 @@ public class Duke {
     private List<Task> tasks = new ArrayList<>();
     private Scanner scanner = new Scanner(System.in);
 
+    private final Storage storage = new Storage("./data/duke.txt");
+    private boolean isLoading = false;
+
     public static void main(String[] args) {
         new Duke().run();
     }
 
     public void run() {
+        try {
+            tasks = storage.load();
+        } catch (DukeException e) {
+            printLine();
+            System.out.println("Warning: Could not load saved tasks. Starting fresh");
+            System.out.println(e.getMessage());
+            printLine();
+        }
+
         printLine();
         printName();
         printGreeting();
@@ -66,7 +78,7 @@ public class Duke {
         case TODO -> todo(input);
         case DEADLINE -> deadline(input);
         case EVENT -> event(input);
-        case MARK -> mark(input);
+        case MARK -> mark(input); 
         case DELETE -> delete(input);
         case BYE -> { /* do nothing here; your while-loop exits on bye */ }
         case UNKNOWN -> throw new DukeException(
@@ -112,6 +124,7 @@ public class Duke {
 
         Task t = tasks.get(index);
         t.done();
+        storage.save(tasks);
 
         printLine();
         System.out.println("Good job for completing! I will mark it as done.");
@@ -139,6 +152,7 @@ public class Duke {
         printLine();
 
         tasks.add(new Todo(description));
+        storage.save(tasks);
     }
 
     public void deadline(String input) throws DukeException {
@@ -175,6 +189,7 @@ public class Duke {
         printLine();
 
         tasks.add(new Deadline(description, by));
+        storage.save(tasks);
     }
 
     public void event(String input) throws DukeException {
@@ -237,6 +252,7 @@ public class Duke {
         printLine();
 
         tasks.add(new Event(description, start, end));
+        storage.save(tasks);
     }
 
     public void delete(String input) throws DukeException {
@@ -263,6 +279,7 @@ public class Duke {
         }
 
         Task removedTask = tasks.remove(index);
+        storage.save(tasks);
 
         printLine();
         System.out.println("Alright. Tasked removed.");
@@ -287,5 +304,4 @@ public class Duke {
         default -> CommandType.UNKNOWN;
         };
     }
-    
 }
