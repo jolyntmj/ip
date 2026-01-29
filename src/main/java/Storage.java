@@ -4,6 +4,10 @@ import java.io.File;
 import java.util.Scanner;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
 
 
 
@@ -93,7 +97,20 @@ public class Storage {
                     String remainder = input.substring(8).trim();
                     String[] parts2 = remainder.split("/by", 2);
                     if (parts.length < 2) return null;
-                    return new Deadline(parts2[0].trim(), parts2[1].trim());
+
+                    String description = parts2[0].trim();
+                    String byRaw = parts2[1].trim();
+                    
+                    if (description.isEmpty() || byRaw.isEmpty()) return null;
+
+                    DateTimeFormatter inFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+
+                    try {
+                        LocalDateTime by = LocalDateTime.parse(byRaw, inFmt);
+                        return new Deadline(description, by);
+                    } catch (DateTimeParseException e) {
+                        return null;
+                    }
                 }
 
                 case "event" -> {
@@ -105,7 +122,18 @@ public class Storage {
                     String[] secondParting = parts3[1].split("/to",2);
                     if (secondParting.length < 2) return null;
 
-                    return new Event(description, secondParting[0].trim(), secondParting[1].trim());
+                    String start = secondParting[0].trim();
+                    String end = secondParting[1].trim();
+                    if (description.isEmpty() || start.isEmpty() || end.isEmpty()) return null;
+
+                    DateTimeFormatter inFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+                    try {
+                        LocalDateTime startTime = LocalDateTime.parse(start, inFmt);
+                        LocalDateTime endTime = LocalDateTime.parse(end, inFmt);
+                        return new Event(description, startTime, endTime);
+                    } catch (DateTimeParseException e) {
+                        return null;
+                    }
                 }
                 default -> {
                     return null;
