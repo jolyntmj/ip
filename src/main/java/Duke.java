@@ -1,5 +1,7 @@
 import java.util.Scanner;
 import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class Duke {
@@ -7,7 +9,6 @@ public class Duke {
     private Scanner scanner = new Scanner(System.in);
 
     private final Storage storage = new Storage("./data/duke.txt");
-    private boolean isLoading = false;
 
     public static void main(String[] args) {
         new Duke().run();
@@ -90,7 +91,8 @@ public class Duke {
         printLine();                              
         for(int i=0; i < tasks.size(); i++ ) {
             Task t = tasks.get(i);
-            System.out.println((i+1) + ". " + t.getType() + "[" + t.getStatusIcon() + "] " + t.getDescription());
+            // System.out.println((i+1) + ". " + t.getType() + "[" + t.getStatusIcon() + "] " + t.getDescription());
+            System.out.println((i + 1) + ". " + t.toString());
         }
         printLine();
     }
@@ -170,15 +172,25 @@ public class Duke {
         }
 
         String description = parts[0];
-        String by = parts[1];
+        String byRaw = parts[1].trim();
 
         if (description.isEmpty()) {
             throw new DukeException("The description of a deadline cannot be empty!");
         }
 
-        if (by.isEmpty()) {
+        if (byRaw.isEmpty()) {
             throw new DukeException("The /by of a deadline cannot be empty!");
         }
+
+        DateTimeFormatter inFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+
+        LocalDateTime by;
+        try {
+            by = LocalDateTime.parse(byRaw, inFormat);
+        } catch (Exception e) {
+            throw new DukeException("Invalid date format. Use yyy-MM-dd HHmm (eg. 2019-12-02 1800)");
+        }
+
 
         printLine();
         System.out.println("Alright. Added to task(s)");
@@ -243,15 +255,26 @@ public class Duke {
             throw new DukeException("The /to of an event cannot be empty!");
         }
 
+        DateTimeFormatter inFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+        
+        LocalDateTime startTime;
+        LocalDateTime endTime;
+        try {
+            startTime = LocalDateTime.parse(start, inFormat);
+            endTime = LocalDateTime.parse(end, inFormat);
+        } catch (Exception e) {
+            throw new DukeException("Invalid date format. Use yyy-MM-dd HHmm (eg. 2019-12-02 1800)");
+        }
+
         printLine();
         System.out.println("Alright. Added to task(s)");
         System.out.println("Please Check:");
-        System.out.println(new Event(description, start, end).toString());
+        System.out.println(new Event(description, startTime, endTime).toString());
         int size = tasks.size(); 
         System.out.println("REMINDER: " + (size+1) + " pending task(s). Please complete it soon. Good Luck!");
         printLine();
 
-        tasks.add(new Event(description, start, end));
+        tasks.add(new Event(description, startTime, endTime));
         storage.save(tasks);
     }
 

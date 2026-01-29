@@ -1,9 +1,12 @@
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class Event extends Task {
 
-    protected String start;
-    protected String end;
+    protected LocalDateTime start;
+    protected LocalDateTime end;
 
-    public Event(String description, String start, String end) {
+    public Event(String description, LocalDateTime start, LocalDateTime end) {
         super(description);
         this.start = start;
         this.end = end;
@@ -11,7 +14,8 @@ public class Event extends Task {
 
     @Override
     public String toString() {
-        return "[E][" + getStatusIcon() + "]" + super.toString() + " (from: " + start + " to " + end + ")";
+        DateTimeFormatter out = DateTimeFormatter.ofPattern("MMM dd yyyy h:mma");
+        return "[E][" + getStatusIcon() + "]" + super.toString() + " (start: " + start.format(out) + " due: " + end.format(out) + ")";
     }
 
     @Override
@@ -21,6 +25,7 @@ public class Event extends Task {
 
     @Override
     public String toSaveString() {
-        return "event " + description + " /from " + this.start + " /to " + this.end;
+        DateTimeFormatter out = DateTimeFormatter.ofPattern("MMM dd yyyy h:mma");
+        return "event " + description + " START: " + this.start.format(out) + " DUE: " + this.end.format(out);
     }
 }
