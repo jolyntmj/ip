@@ -23,4 +23,10 @@ public abstract class Task {
         return this.description;
     }
     public abstract String getType();
+
+    public boolean isDone() {
+        return this.isDone;
+    }
+
+    public abstract String toSaveString();
 }

@@ -18,4 +18,9 @@ public class Event extends Task {
     public String getType() {
         return "[E]";
     }
+
+    @Override
+    public String toSaveString() {
+        return "event " + description + " /from " + this.start + " /to " + this.end;
+    }
 }

@@ -1,7 +1,5 @@
 public class Todo extends Task {
 
-    protected String by;
-
     public Todo(String description) {
         super(description);
     }
@@ -14,5 +12,10 @@ public class Todo extends Task {
     @Override
     public String getType() {
         return "[T]";
+    }
+
+    @Override
+    public String toSaveString() {
+        return "todo " + description;
     }
 }
