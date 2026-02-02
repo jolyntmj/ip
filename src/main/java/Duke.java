@@ -1,82 +1,62 @@
-import java.util.Scanner;
-import java.util.List;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-
 public class Duke {
-    private List<Task> tasks = new ArrayList<>();
-    private Scanner scanner = new Scanner(System.in);
+    private TaskList tasks;
+    private Storage storage;
+    private Ui ui;
+    private Parser parser;
 
-    private final Storage storage = new Storage("./data/duke.txt");
+    public Duke(String filePath) {
+        this.ui = new Ui();
+        this.storage = new Storage(filePath);
+        this.parser = new Parser();
+
+        TaskList loaded;
+        storage = new Storage(filePath);
+            try {
+                loaded =  new TaskList(storage.load());
+            } catch (DukeException e) {
+                ui.printLoadingError();
+                loaded = new TaskList();
+            }
+            this.tasks = loaded;
+    }
 
     public static void main(String[] args) {
-        new Duke().run();
+        new Duke("./data/duke.txt").run();
     }
 
     public void run() {
-        try {
-            tasks = storage.load();
-        } catch (DukeException e) {
-            printLine();
-            System.out.println("Warning: Could not load saved tasks. Starting fresh");
-            System.out.println(e.getMessage());
-            printLine();
-        }
-
-        printLine();
-        printName();
-        printGreeting();
-
-        String input = scanner.nextLine().trim();
         
-        while(!input.equalsIgnoreCase("bye")) {
-            // if (input.isEmpty()) {
-            //     System.out.println("Please enter a command.");
-            //     return;
-            // }
+        ui.printGreeting();
+        
+        while(true) {
+
+            String input = ui.readCommand();
+
+            if (input.isEmpty()) {
+                ui.printError("Please enter a command.");
+                continue;
+            }
 
             try {
                 handleInput(input);
             } catch (DukeException e) {
-                printLine();
-                System.out.println(e.getMessage());
-                printLine();
+                ui.printError(e.getMessage());
             }
             
-            // handleInput(input);
-            input = scanner.nextLine().trim();
+            if (input.equalsIgnoreCase("bye")) {
+                ui.printGoodbye();
+                break;
+            }
         } 
-        printLine();
-        printGoodbye();
-        printLine();
-    }
-
-    private void printLine() {
-        System.out.println("-----------------------------------------------------------------");
-    }
-
-    private void printName() {
-        System.out.println("Hello! I am sealriously");
-    }
-
-    private void printGreeting() {
-        System.out.println("What can I do for you?");
-    }
-
-    private void printGoodbye() {
-        System.out.println("Bye. See you soon!");
     }
 
     public void handleInput(String input) throws DukeException {
 
-        if (input.isEmpty()) {
-            throw new DukeException("Please enter a command.");
-        } CommandType command = parseCommandType(input);
+        CommandType command = parser.parseCommandType(input);
 
         switch (command) {
-        case LIST -> printList();
-        case TODO -> todo(input);
+        case LIST -> ui.printList(tasks);
+        case TODO -> todo(input); 
         case DEADLINE -> deadline(input);
         case EVENT -> event(input);
         case MARK -> mark(input); 
@@ -87,244 +67,51 @@ public class Duke {
         }
     }
 
-    public void printList() { 
-        printLine();                              
-        for(int i=0; i < tasks.size(); i++ ) {
-            Task t = tasks.get(i);
-            // System.out.println((i+1) + ". " + t.getType() + "[" + t.getStatusIcon() + "] " + t.getDescription());
-            System.out.println((i + 1) + ". " + t.toString());
-        }
-        printLine();
-    }
-    public void split(String input) {
-        
-    }
-
     public void mark(String input) throws DukeException {
-
-        String[] parts = input.split(" ", 2);
-
-        if (parts.length == 1) {
-            throw new DukeException("Please enter a task number to mark.");
-        }
-
-        int index;
-        
-        if (parts.length < 2 || parts[1].trim().isEmpty()) {
-            throw new DukeException("Please specify a task number to mark.");
-        }
-
-        try {
-            index = Integer.parseInt(parts[1].trim()) - 1;
-        } catch (NumberFormatException e) {
-            throw new DukeException("Task number must be a number.");
-        }
+        int index = parser.parseIndex(input);
     
         if (index < 0 || index >= tasks.size()) {
             throw new DukeException("That task number does not exist.");
         }
 
-        Task t = tasks.get(index);
-        t.done();
+        tasks.mark(index);
         storage.save(tasks);
 
-        printLine();
-        System.out.println("Good job for completing! I will mark it as done.");
-        System.out.println("Please check:");
-        System.out.println("[" + t.getStatusIcon() + "] " + t.getDescription());
-        printLine();
+        ui.printMark(tasks.get(index));
 
     }
 
     public void todo(String input) throws DukeException {
-        String[] parts = input.split(" ", 2);
 
-        if (parts.length < 2 || parts[1].trim().isEmpty()) {
-            throw new DukeException("The description of a todo cannot be empty!");
-        }
+        String description = parser.parseTodo(input);
 
-        String description = parts[1];
+        Task task = new Todo(description);
 
-        printLine();
-        System.out.println("Alright. Added to task(s)");
-        System.out.println("Please Check:");
-        System.out.println(new Todo(description).toString());
-        int size = tasks.size();
-        System.out.println("REMINDER: " + (size+1) + " pending task(s). Please complete it soon. Good Luck!");
-        printLine();
+        ui.printAdded(task, tasks.size());
 
-        tasks.add(new Todo(description));
+        tasks.add(task);
         storage.save(tasks);
     }
 
     public void deadline(String input) throws DukeException {
-        String remainder = input.substring(8).trim();
-
-        if (remainder.isEmpty()) {
-            throw new DukeException("The description and /by of a deadline cannot be empty!");
-        }
-    
-
-        String[] parts = remainder.split("/by", 2);
-
-        if (parts.length < 2) {
-            throw new DukeException("The /by of a deadline cannot be empty!");
-        }
-
-        String description = parts[0];
-        String byRaw = parts[1].trim();
-
-        if (description.isEmpty()) {
-            throw new DukeException("The description of a deadline cannot be empty!");
-        }
-
-        if (byRaw.isEmpty()) {
-            throw new DukeException("The /by of a deadline cannot be empty!");
-        }
-
-        DateTimeFormatter inFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
-
-        LocalDateTime by;
-        try {
-            by = LocalDateTime.parse(byRaw, inFormat);
-        } catch (Exception e) {
-            throw new DukeException("Invalid date format. Use yyy-MM-dd HHmm (eg. 2019-12-02 1800)");
-        }
-
-
-        printLine();
-        System.out.println("Alright. Added to task(s)");
-        System.out.println("Please Check:");
-        System.out.println(new Deadline(description, by).toString());
-        int size = tasks.size();
-        System.out.println("REMINDER: " + (size+1) + " pending task(s). Please complete it soon. Good Luck!");
-        printLine();
-
-        tasks.add(new Deadline(description, by));
+        
+        Deadline deadline = parser.parseDeadline(input);
+        ui.printAdded(deadline, tasks.size());
+        tasks.add(deadline);
         storage.save(tasks);
     }
 
     public void event(String input) throws DukeException {
-        String remainder = input.substring(5).trim();
-
-        if (remainder.isEmpty()) {
-            throw new DukeException("The description, /from and /to of an event cannot be empty!");
-        }
-
-        if (remainder.startsWith("/from")) {
-            if (!remainder.contains("/to")) {
-                throw new DukeException("The description and /to of an event cannot be empty!");
-            }
-        }
-
-        if (remainder.startsWith("/to")) {
-            throw new DukeException("The description and /from of an event cannot be empty!");
-        }
-
-        String[] parts = remainder.split("/from", 2);
-
-        if (parts.length < 2) {
-            if (remainder.contains("/to")) {
-                throw new DukeException("The /from of an event cannot be empty!");
-            } else {
-                throw new DukeException("The /from and /to of an event cannot be empty!");
-            }
-        }
-
-        String description = parts[0].trim();
-        String firstSplit = parts[1].trim();
-
-        if (description.isEmpty()) {
-            throw new DukeException("The description of an event cannot be empty!");
-        }
-
-        String[] secondParting = firstSplit.split("/to", 2);
-
-        if (secondParting.length < 2) {
-            throw new DukeException("The /to of an event cannot be empty!");
-        }
-
-        String start = secondParting[0].trim();
-        String end = secondParting[1].trim();
-
-        if (start.isEmpty()) {
-            throw new DukeException("The /from of an event cannot be empty!");
-        }
-    
-        if (end.isEmpty()) {
-            throw new DukeException("The /to of an event cannot be empty!");
-        }
-
-        DateTimeFormatter inFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
-        
-        LocalDateTime startTime;
-        LocalDateTime endTime;
-        try {
-            startTime = LocalDateTime.parse(start, inFormat);
-            endTime = LocalDateTime.parse(end, inFormat);
-        } catch (Exception e) {
-            throw new DukeException("Invalid date format. Use yyy-MM-dd HHmm (eg. 2019-12-02 1800)");
-        }
-
-        printLine();
-        System.out.println("Alright. Added to task(s)");
-        System.out.println("Please Check:");
-        System.out.println(new Event(description, startTime, endTime).toString());
-        int size = tasks.size(); 
-        System.out.println("REMINDER: " + (size+1) + " pending task(s). Please complete it soon. Good Luck!");
-        printLine();
-
-        tasks.add(new Event(description, startTime, endTime));
+        Event event = parser.parseEvent(input);
+        ui.printAdded(event, tasks.size());
+        tasks.add(event);
         storage.save(tasks);
     }
 
     public void delete(String input) throws DukeException {
-        String[] parts = input.split(" ");
-
-        if (parts.length == 1) {
-            throw new DukeException("Please enter a task number to delete.");
-        }
-
-        int index;
-        
-        if (parts.length < 2 || parts[1].trim().isEmpty()) {
-            throw new DukeException("Please specify a task number to delete.");
-        }
-
-        try {
-            index = Integer.parseInt(parts[1].trim()) - 1;
-        } catch (NumberFormatException e) {
-            throw new DukeException("Task number must be a number.");
-        }
-    
-        if (index < 0 || index >= tasks.size()) {
-            throw new DukeException("That task number does not exist.");
-        }
-
-        Task removedTask = tasks.remove(index);
+        int index = parser.parseIndex(input);
+        tasks.delete(index);
         storage.save(tasks);
-
-        printLine();
-        System.out.println("Alright. Tasked removed.");
-        System.out.println("Please check:");
-        System.out.println(" " + removedTask);
-        System.out.println("REMINDER: " + tasks.size() + " pending task(s). Please complete it soon. Good Luck!");
-        printLine();
-
-    }
-    
-    private CommandType parseCommandType(String input) {
-        String firstWord = input.trim().split("\\s+", 2)[0].toLowerCase();
-    
-        return switch (firstWord) {
-        case "list" -> CommandType.LIST;
-        case "todo" -> CommandType.TODO;
-        case "deadline" -> CommandType.DEADLINE;
-        case "event" -> CommandType.EVENT;
-        case "mark" -> CommandType.MARK;
-        case "delete" -> CommandType.DELETE;
-        case "bye" -> CommandType.BYE;
-        default -> CommandType.UNKNOWN;
-        };
+        ui.printDeleted(tasks.get(index), index);
     }
 }

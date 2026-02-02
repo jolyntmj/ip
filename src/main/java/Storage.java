@@ -6,7 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.DateTimeException;
 import java.time.LocalDateTime;
 
 
@@ -144,7 +143,7 @@ public class Storage {
         }
     }
 
-    public void save(List<Task> tasks) throws DukeException {
+    public void save(TaskList tasks) throws DukeException {
         try {
             File f = new File(filePath);
             File parent = f.getParentFile();

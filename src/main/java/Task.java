@@ -28,5 +28,10 @@ public abstract class Task {
         return this.isDone;
     }
 
+    public boolean isNotDone() {
+        this.isDone = false;
+        return this.isDone;
+    }
+
     public abstract String toSaveString();
 }
