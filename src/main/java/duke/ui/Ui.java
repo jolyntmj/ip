@@ -70,11 +70,6 @@ public class Ui {
         System.out.println("[" + t.getStatusIcon() + "] " + t.getDescription());
         printLine();
     }
-<<<<<<< HEAD
-    
-    public void printList(TaskList tasks) { 
-        printLine();             
-=======
 
     /**
      * Prints all tasks in the given task list.
@@ -83,7 +78,6 @@ public class Ui {
      */
     public void printList(TaskList tasks) {
         printLine();
->>>>>>> 41f80c9 (A-CodingStandard: fix style issues and formatting)
         if (tasks.isEmpty()) {
             System.out.println("No tasks in your list.");
         } else {
