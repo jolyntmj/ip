@@ -83,7 +83,7 @@ public class Ui {
         printLine();
         System.out.println("Alright. Added to task(s)");
         System.out.println("Please Check:");
-        System.out.println(task.toString());
+        System.out.println(task);
         System.out.println("REMINDER: " + (size+1) + " pending task(s). Please complete it soon. Good Luck!");
         printLine();
     }
@@ -128,9 +128,31 @@ public class Ui {
         } else {
             for (int i=0; i < tasks.size(); i++ ) {
                 Task t = tasks.get(i);
-                System.out.println((i + 1) + ". " + t.toString());
+                System.out.println((i + 1) + ". " + t);
             }
         printLine();
+        }
+    }
+
+    /**
+     * Prints all tasks whose descriptions match the given keyword.
+     * If no matching tasks are found, an appropriate message is shown.
+     *
+     * @param tasks The task list to search through.
+     * @param match The keyword used to match task descriptions.
+     */
+    public void printFind(TaskList tasks, String match) {
+        System.out.println("Here are the matching tasks in your list:");
+        int count=0;
+        for (int i=0; i < tasks.size(); i++) {
+            if (tasks.get(i).getDescription().toLowerCase().contains(match)) {
+                System.out.println(tasks.get(i));
+                count++;
+            } 
+        }
+
+        if (count==0) {
+            System.out.println("No matching task found!");
         }
     }
 }

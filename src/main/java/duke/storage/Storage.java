@@ -48,11 +48,7 @@ public class Storage {
     public List<Task> load() throws DukeException {
         File file = new File(filePath);
         List<Task> tasks = new ArrayList<>();
-<<<<<<< HEAD
-        boolean corruptedFound = false;
-=======
         boolean hascorruptedFound = false;
->>>>>>> c721524 (A-CodingStandard: final fixes)
 
         try {
             if (!file.exists()) {
@@ -73,11 +69,7 @@ public class Storage {
 
                 Task task = serializer.fromStorageString(line);
                 if (task == null) {
-<<<<<<< HEAD
-                    corruptedFound = true;
-=======
                     hascorruptedFound = true;
->>>>>>> c721524 (A-CodingStandard: final fixes)
                     continue;
                 }
 
@@ -85,11 +77,7 @@ public class Storage {
             }
             scanner.close();
 
-<<<<<<< HEAD
-            if (corruptedFound) {
-=======
             if (hascorruptedFound) {
->>>>>>> c721524 (A-CodingStandard: final fixes)
                 System.out.println("Warning: Some saved tasks were corrupted and skipped.");
             }
 
@@ -134,7 +122,7 @@ public class Storage {
      * Format example:
      * {@code 1 | todo read book}
      * {@code 0 | deadline submit report /by 2019-12-02 1800}
-     * {@code 1 | event meeting /from 2019-12-02 1800 /to 2019-12-02 2000}
+     * {@code 1 | event meeting START: 2019-12-02 1800 DUE: 2019-12-02 2000}
      */
     private static class TaskSerializer {
 
@@ -201,7 +189,7 @@ public class Storage {
         }
 
         private Task parseDeadline(String remainder) {
-            String[] parts = remainder.split("/by", 2);
+            String[] parts = remainder.split(" DUE: ", 2);
             if (parts.length < 2) {
                 return null;
             }
@@ -222,13 +210,13 @@ public class Storage {
         }
 
         private Task parseEvent(String remainder) {
-            String[] parts = remainder.split("/from", 2);
+            String[] parts = remainder.split(" START: ", 2);
             if (parts.length < 2) {
                 return null;
             }
 
             String description = parts[0].trim();
-            String[] timeParts = parts[1].trim().split("/to", 2);
+            String[] timeParts = parts[1].trim().split(" DUE: ", 2);
             if (timeParts.length < 2) {
                 return null;
             }
