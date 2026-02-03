@@ -16,7 +16,13 @@ public class Event extends Task {
     @Override
     public String toString() {
         DateTimeFormatter out = DateTimeFormatter.ofPattern("MMM dd yyyy h:mma");
+<<<<<<< Updated upstream
         return "[E][" + getStatusIcon() + "]" + super.toString() + " (start: " + start.format(out) + " due: " + end.format(out) + ")";
+=======
+        return "[E][" + getStatusIcon() + "] " + super.getDescription()
+            + " (start: " + start.format(out)
+            + " due: " + end.format(out) + ")";
+>>>>>>> Stashed changes
     }
 
     @Override

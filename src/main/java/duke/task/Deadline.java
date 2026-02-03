@@ -14,7 +14,7 @@ public class Deadline extends Task {
     @Override
     public String toString() {
         DateTimeFormatter out = DateTimeFormatter.ofPattern("MMM dd yyyy h:mma");
-        return "[D][" + getStatusIcon() + "]" + super.toString() + " (due: " + by.format(out) + ")";
+        return "[D][" + getStatusIcon() + "] " + super.getDescription() + " (due: " + by.format(out) + ")";
     }
 
     @Override

@@ -23,6 +23,7 @@ public class Parser {
         case "event" -> CommandType.EVENT;
         case "mark" -> CommandType.MARK;
         case "delete" -> CommandType.DELETE;
+        case "find" ->CommandType.FIND;
         case "bye" -> CommandType.BYE;
         default -> CommandType.UNKNOWN;
         };
@@ -66,7 +67,7 @@ public class Parser {
         }
     
 
-        String[] parts = remainder.split("/by", 2);
+        String[] parts = remainder.split("DUE: ", 2);
 
         if (parts.length < 2) {
             throw new DukeException("The /by of a deadline cannot be empty!");
@@ -93,30 +94,41 @@ public class Parser {
         return new Deadline(description,by);
     }
 
+<<<<<<< Updated upstream
+=======
+    /**
+     * Parses an event command into an {@link Event} object.
+     * Expected format: {@code "event <desc> START:  yyyy-MM-dd HHmm DUE:  yyyy-MM-dd HHmm"}.
+     *
+     * @param input Full user input string.
+     * @return Parsed {@link Event}.
+     * @throws DukeException If description, "START: ", or "DUE: " is missing, or the datetime format is invalid.
+     */
+>>>>>>> Stashed changes
     public Event parseEvent(String input) throws DukeException {
         String remainder = input.substring(5).trim();
 
         if (remainder.isEmpty()) {
-            throw new DukeException("The description, /from and /to of an event cannot be empty!");
+            throw new DukeException("The description, START:  and DUE:  of an event cannot be empty!");
         }
 
-        if (remainder.startsWith("/from")) {
-            if (!remainder.contains("/to")) {
-                throw new DukeException("The description and /to of an event cannot be empty!");
+        if (remainder.startsWith("START: ")) {
+            if (!remainder.contains("DUE: ")) {
+                throw new DukeException("The description and DUE:  of an event cannot be empty!");
             }
         }
 
-        if (remainder.startsWith("/to")) {
-            throw new DukeException("The description and /from of an event cannot be empty!");
+        if (remainder.startsWith("DUE: ")) {
+            throw new DukeException("The description and START:  of an event cannot be empty!");
         }
 
-        String[] parts = remainder.split("/from", 2);
+        String[] parts = remainder.split("START: ", 2);
 
         if (parts.length < 2) {
-            if (remainder.contains("/to")) {
-                throw new DukeException("The /from of an event cannot be empty!");
+            if (remainder.contains("DUE: ")) {
+                throw new DukeException("The START of an event cannot be empty!");
             } else {
-                throw new DukeException("The /from and /to of an event cannot be empty!");
+                throw new DukeException("The START and DUE of an event cannot be empty!");
             }
         }
 
@@ -127,21 +139,21 @@ public class Parser {
             throw new DukeException("The description of an event cannot be empty!");
         }
 
-        String[] secondParting = firstSplit.split("/to", 2);
+        String[] secondParting = firstSplit.split("DUE: ", 2);
 
         if (secondParting.length < 2) {
-            throw new DukeException("The /to of an event cannot be empty!");
+            throw new DukeException("The DUE: of an event cannot be empty!");
         }
 
         String start = secondParting[0].trim();
         String end = secondParting[1].trim();
 
         if (start.isEmpty()) {
-            throw new DukeException("The /from of an event cannot be empty!");
+            throw new DukeException("The START: of an event cannot be empty!");
         }
     
         if (end.isEmpty()) {
-            throw new DukeException("The /to of an event cannot be empty!");
+            throw new DukeException("The DUE: of an event cannot be empty!");
         }
         LocalDateTime startTime;
         LocalDateTime endTime;
@@ -153,5 +165,22 @@ public class Parser {
         }
 
         return new Event(description, startTime, endTime);
+    }
+
+    /**
+     * Extracts the description keyword from a {@code find} command.
+     *
+     * @param input The full user input starting with {@code find}.
+     * @return The trimmed keyword used for matching task descriptions.
+     * @throws DukeException If the find command does not contain a keyword.
+     */
+    public String parseDescription(String input) throws DukeException {
+        String[] parts = input.split("find", 2);
+
+        if (parts.length < 2 || parts[1].trim().isEmpty()) {
+            throw new DukeException("The description of a find cannot be empty!");
+        }
+
+        return parts[1].trim();
     }
 }

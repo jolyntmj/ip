@@ -74,9 +74,14 @@ public class Duke {
         case EVENT -> event(input);
         case MARK -> mark(input); 
         case DELETE -> delete(input);
+<<<<<<< Updated upstream
         case BYE -> { /* do nothing here; your while-loop exits on bye */ }
+=======
+        case FIND -> find(input);
+        case BYE -> { /* do nothing here; your while loop exits on bye */ }
+>>>>>>> Stashed changes
         case UNKNOWN -> throw new DukeException(
-                "Unknown command. Please enter the correct command. Eg. event project meeting /from Mon 2pm /to 4pm");
+                "Unknown command. Please enter the correct command.");
         }
     }
 
@@ -126,5 +131,16 @@ public class Duke {
         tasks.delete(index);
         storage.save(tasks);
         ui.printDeleted(tasks.get(index), index);
+    }
+
+    /**
+     * Finds and displays tasks whose descriptions contain the given keyword.
+     *
+     * @param input The full user input containing the {@code find} command.
+     * @throws DukeException If the find command does not contain a keyword.
+     */
+    public void find(String input) throws DukeException {
+        String match = parser.parseDescription(input).toLowerCase();
+        ui.printFind(tasks, match);
     }
 }

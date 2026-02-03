@@ -175,4 +175,128 @@ public class Storage {
             throw new DukeException("Error saving data: " + e.getMessage());
         }
     }
+<<<<<<< Updated upstream
+=======
+
+    /**
+     * Converts tasks to and from their storage format.
+     * Format example:
+     * {@code 1 | todo read book}
+     * {@code 0 | deadline submit report /by 2019-12-02 1800}
+     * {@code 1 | event meeting START: 2019-12-02 1800 DUE: 2019-12-02 2000}
+     */
+    private static class TaskSerializer {
+
+        /**
+         * Converts a stored line into a {@link Task}.
+         *
+         * @param line A single line from the save file.
+         * @return Parsed task, or {@code null} if the line is corrupted.
+         */
+        Task fromStorageString(String line) {
+            String[] parts = line.split("\\|", 2);
+            if (parts.length != 2) {
+                return null;
+            }
+
+            String status = parts[0].trim();
+            String payload = parts[1].trim();
+
+            if ((!status.equals("0") && !status.equals("1")) || payload.isEmpty()) {
+                return null;
+            }
+
+            Task task = parsePayload(payload);
+            if (task == null) {
+                return null;
+            }
+
+            if (status.equals("1")) {
+                task.done();
+            }
+
+            return task;
+        }
+
+        /**
+         * Converts a {@link Task} into its storage line representation.
+         *
+         * @param task Task to convert.
+         * @return Storage string line for the task.
+         */
+        String toStorageString(Task task) {
+            String doneFlag = task.isDone() ? "1" : "0";
+            return doneFlag + " | " + task.toSaveString();
+        }
+
+        private Task parsePayload(String payload) {
+            String[] parts = payload.trim().split("\\s+", 2);
+            String type = parts[0].toLowerCase();
+            String remainder = parts.length > 1 ? parts[1].trim() : "";
+
+            return switch (type) {
+            case "todo" -> parseTodo(remainder);
+            case "deadline" -> parseDeadline(remainder);
+            case "event" -> parseEvent(remainder);
+            default -> null;
+            };
+        }
+
+        private Task parseTodo(String remainder) {
+            if (remainder.isEmpty()) {
+                return null;
+            }
+            return new Todo(remainder);
+        }
+
+        private Task parseDeadline(String remainder) {
+            String[] parts = remainder.split(" DUE: ", 2);
+            if (parts.length < 2) {
+                return null;
+            }
+
+            String description = parts[0].trim();
+            String byRaw = parts[1].trim();
+
+            if (description.isEmpty() || byRaw.isEmpty()) {
+                return null;
+            }
+
+            try {
+                LocalDateTime by = LocalDateTime.parse(byRaw, DATE_FORMAT);
+                return new Deadline(description, by);
+            } catch (DateTimeParseException e) {
+                return null;
+            }
+        }
+
+        private Task parseEvent(String remainder) {
+            String[] parts = remainder.split(" START: ", 2);
+            if (parts.length < 2) {
+                return null;
+            }
+
+            String description = parts[0].trim();
+            String[] timeParts = parts[1].trim().split(" DUE: ", 2);
+            if (timeParts.length < 2) {
+                return null;
+            }
+
+            String startRaw = timeParts[0].trim();
+            String endRaw = timeParts[1].trim();
+
+            if (description.isEmpty() || startRaw.isEmpty() || endRaw.isEmpty()) {
+                return null;
+            }
+
+            try {
+                LocalDateTime start = LocalDateTime.parse(startRaw, DATE_FORMAT);
+                LocalDateTime end = LocalDateTime.parse(endRaw, DATE_FORMAT);
+                return new Event(description, start, end);
+            } catch (DateTimeParseException e) {
+                return null;
+            }
+        }
+    }
+>>>>>>> Stashed changes
 }
