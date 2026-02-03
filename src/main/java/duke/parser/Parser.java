@@ -7,12 +7,19 @@ import duke.exception.DukeException;
 import duke.task.Deadline;
 import duke.task.Event;
 
+/**
+ * Parses user commands and determines what action Duke should take.
+ */
 public class Parser {
 
     private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
 
-    public Parser() {}
-
+    /**
+     * Determines the {@link CommandType} based on the first word of the input.
+     *
+     * @param input Full user input string.
+     * @return Parsed {@code CommandType}. Returns {@code UNKNOWN} if the command is not recognised.
+     */
     public CommandType parseCommandType(String input) {
         String firstWord = input.trim().split("\\s+", 2)[0].toLowerCase();
     
@@ -28,6 +35,14 @@ public class Parser {
         };
     }
     
+    /**
+     * Parses a one-based task number from the input and converts it to a zero-based index.
+     * Example: {@code "mark 2"} returns {@code 1}.
+     *
+     * @param input Full user input containing a task number.
+     * @return Zero-based index of the task.
+     * @throws DukeException If the task number is missing or not a valid integer.
+     */
     public int parseIndex(String input) throws DukeException {
         String[] parts = input.split(" ", 2);
 
@@ -47,6 +62,14 @@ public class Parser {
 
     }
 
+    /**
+     * Extracts the description for a todo command.
+     * Example: {@code "todo read book"} returns {@code "read book"}.
+     *
+     * @param input Full user input string.
+     * @return Description portion of the todo command.
+     * @throws DukeException If the description is missing.
+     */
     public String parseTodo(String input) throws DukeException {
         String[] parts = input.split(" ", 2);
 
@@ -58,6 +81,14 @@ public class Parser {
 
     }
 
+    /**
+     * Parses a deadline command into a {@link Deadline} object.
+     * Expected format: {@code "deadline <desc> /by yyyy-MM-dd HHmm"}.
+     *
+     * @param input Full user input string.
+     * @return Parsed {@link Deadline}.
+     * @throws DukeException If description or "/by" is missing, or the datetime format is invalid.
+     */
     public Deadline parseDeadline(String input) throws DukeException {
         String remainder = input.substring(8).trim();
 
@@ -93,6 +124,14 @@ public class Parser {
         return new Deadline(description,by);
     }
 
+    /**
+     * Parses an event command into an {@link Event} object.
+     * Expected format: {@code "event <desc> /from yyyy-MM-dd HHmm /to yyyy-MM-dd HHmm"}.
+     *
+     * @param input Full user input string.
+     * @return Parsed {@link Event}.
+     * @throws DukeException If description, "/from", or "/to" is missing, or the datetime format is invalid.
+     */
     public Event parseEvent(String input) throws DukeException {
         String remainder = input.substring(5).trim();
 

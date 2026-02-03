@@ -7,8 +7,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import duke.exception.DukeException;
 
+/**
+ * Unit tests for {@link TaskList}.
+ */
 public class TaskListTest {
     
+    /**
+     * Tests deleting a valid index removes the correct task and shifts remaining tasks.
+     */
     @Test
     public void delete_validIndex_removesAndReturnsTask() throws DukeException {
         TaskList list = new TaskList();
@@ -22,12 +28,18 @@ public class TaskListTest {
         assertEquals("[T][ ] sleep", list.get(0).toString());
     }
 
+    /**
+     * Tests deleting an invalid index throws {@link DukeException}.
+     */
     @Test
     public void delete_invalidIndex_throwsException() {
         TaskList list = new TaskList();
         assertThrows(DukeException.class, () -> list.delete(0));
     }
 
+    /**
+     * Tests marking a valid index marks the task as done.
+     */
     @Test
     public void mark_validIndex_marksTaskDone() throws DukeException {
         TaskList list = new TaskList();
@@ -38,6 +50,9 @@ public class TaskListTest {
         assertTrue(list.get(0).isDone()); 
     }
 
+     /**
+     * Tests marking an invalid index throws {@link DukeException}.
+     */
     @Test
     public void mark_invalidIndex_throwsException() {
         TaskList list = new TaskList();

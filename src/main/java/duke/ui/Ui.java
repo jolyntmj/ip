@@ -4,22 +4,39 @@ import java.util.Scanner;
 import duke.task.Task;
 import duke.task.TaskList;
 
+/**
+ * Handles all user interaction (reading input and printing output).
+ */
 public class Ui {
 
     private final Scanner input;
 
+    /**
+     * Constructs a {@code Ui} that reads user input from standard input.
+     */
     public Ui() {
         this.input = new Scanner(System.in);
     }
 
+    /**
+     * Reads a command from the user.
+     *
+     * @return The trimmed command string entered by the user.
+     */
     public String readCommand() {
         return input.nextLine().trim();
     }
 
+    /**
+     * Prints a horizontal divider line.
+     */
     public void printLine() {
         System.out.println("-----------------------------------------------------------------");
     }
 
+    /**
+     * Prints the greeting message shown at the start of the program.
+     */
     public void printGreeting() {
         printLine();
         System.out.println("Hello! I am sealriously");
@@ -27,24 +44,41 @@ public class Ui {
         printLine();
     }
 
+    /**
+     * Prints the goodbye message shown before exiting.
+     */
     public void printGoodbye() {
         printLine();
         System.out.println("Bye. See you soon!");
         printLine();
     }
 
+    /**
+     * Prints a warning indicating saved tasks could not be loaded.
+     */
     public void printLoadingError() {
         printLine();
         System.out.println("Warning: Could not load saved tasks. Starting fresh");
         printLine();
     }
 
+    /**
+     * Prints an error message wrapped by divider lines.
+     *
+     * @param message Error message to display.
+     */
     public void printError(String message) {
         printLine();
         System.out.println(message);
         printLine();
     }
 
+    /**
+     * Prints output after adding a task.
+     *
+     * @param task The task that was added.
+     * @param size Current number of tasks before adding the new one.
+     */
     public void printAdded(Task task, int size) {
         printLine();
         System.out.println("Alright. Added to task(s)");
@@ -54,6 +88,12 @@ public class Ui {
         printLine();
     }
 
+     /**
+     * Prints output after deleting a task.
+     *
+     * @param task The task that was deleted.
+     * @param size Current number of tasks before deletion.
+     */
     public void printDeleted(Task task, int size) {
         printLine();
         System.out.println("Alright. Tasked removed.");
@@ -63,14 +103,24 @@ public class Ui {
         printLine();
     }
 
+    /**
+     * Prints output after marking a task as completed.
+     *
+     * @param t The task that was marked as done.
+     */
     public void printMark(Task t) {
         printLine();
         System.out.println("Good job for completing! I will mark it as done.");
         System.out.println("Please check:");
-        System.out.println("[" + t.getStatusIcon() + "] " + t.getDescription());
+        System.out.println("[" + t.getStatusIcon() + "] " + t.toString());
         printLine();
     }
     
+    /**
+     * Prints all tasks in the given task list.
+     *
+     * @param tasks The task list to display.
+     */
     public void printList(TaskList tasks) { 
         printLine();             
         if (tasks.isEmpty()) {

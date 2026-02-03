@@ -11,12 +11,21 @@ import duke.task.TaskList;
 import duke.task.Todo;
 import duke.ui.Ui;
 
+/**
+ * Main entry point of the Duke chatbot application.
+ * Duke coordinates the UI, storage, task list and parser to execute user commands.
+ */
 public class Duke {
     private TaskList tasks;
     private Storage storage;
     private Ui ui;
     private Parser parser;
 
+     /**
+     * Constructs a Duke instance and attempts to load saved tasks from the given file path.
+     *
+     * @param filePath File path used for loading and saving tasks.
+     */
     public Duke(String filePath) {
         this.ui = new Ui();
         this.storage = new Storage(filePath);
@@ -33,10 +42,19 @@ public class Duke {
             this.tasks = loaded;
     }
 
+    /**
+     * Starts the Duke chatbot.
+     *
+     * @param args Command-line arguments (unused).
+     */
     public static void main(String[] args) {
         new Duke("./data/duke.txt").run();
     }
 
+
+    /**
+     * Runs the main input-processing loop until the user types "bye".
+     */
     public void run() {
         
         ui.printGreeting();
@@ -63,6 +81,12 @@ public class Duke {
         } 
     }
 
+    /**
+     * Determines the command type and dispatches it to the appropriate handler.
+     *
+     * @param input Full user input string.
+     * @throws DukeException If the command is unknown or contains invalid data.
+     */
     public void handleInput(String input) throws DukeException {
 
         CommandType command = parser.parseCommandType(input);
@@ -80,6 +104,12 @@ public class Duke {
         }
     }
 
+    /**
+     * Marks the specified task as done.
+     *
+     * @param input User input string containing the task number.
+     * @throws DukeException If the task number is invalid or out of range.
+     */
     public void mark(String input) throws DukeException {
         int index = parser.parseIndex(input);
     
@@ -94,6 +124,12 @@ public class Duke {
 
     }
 
+    /**
+     * Adds a todo task based on user input.
+     *
+     * @param input User input string.
+     * @throws DukeException If the description is missing.
+     */
     public void todo(String input) throws DukeException {
 
         String description = parser.parseTodo(input);
@@ -106,6 +142,12 @@ public class Duke {
         storage.save(tasks);
     }
 
+    /**
+     * Adds a deadline task based on user input.
+     *
+     * @param input User input string.
+     * @throws DukeException If the deadline format is invalid.
+     */
     public void deadline(String input) throws DukeException {
         
         Deadline deadline = parser.parseDeadline(input);
@@ -114,6 +156,12 @@ public class Duke {
         storage.save(tasks);
     }
 
+    /**
+     * Adds an event task based on user input.
+     *
+     * @param input User input string.
+     * @throws DukeException If the event format is invalid.
+     */
     public void event(String input) throws DukeException {
         Event event = parser.parseEvent(input);
         ui.printAdded(event, tasks.size());
@@ -121,6 +169,12 @@ public class Duke {
         storage.save(tasks);
     }
 
+    /**
+     * Deletes the task at the specified index.
+     *
+     * @param input User input string containing the task number.
+     * @throws DukeException If the task number is invalid or out of range.
+     */
     public void delete(String input) throws DukeException {
         int index = parser.parseIndex(input);
         tasks.delete(index);
