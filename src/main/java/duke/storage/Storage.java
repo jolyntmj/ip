@@ -46,15 +46,10 @@ public class Storage {
      * @throws DukeException If an IO error occurs while reading the file.
      */
     public List<Task> load() throws DukeException {
-<<<<<<< HEAD
-        boolean corruptedFound = false;
-    
-=======
         File file = new File(filePath);
         List<Task> tasks = new ArrayList<>();
-        boolean hasCorruptedFound = false;
+        boolean hascorruptedFound = false;
 
->>>>>>> 41f80c9 (A-CodingStandard: fix style issues and formatting)
         try {
             if (!file.exists()) {
                 File parent = file.getParentFile();
@@ -74,20 +69,15 @@ public class Storage {
 
                 Task task = serializer.fromStorageString(line);
                 if (task == null) {
-                    hasCorruptedFound = true;
+                    hascorruptedFound = true;
                     continue;
                 }
 
                 tasks.add(task);
             }
-<<<<<<< HEAD
-            s.close();
-            if (corruptedFound) {
-=======
             scanner.close();
 
-            if (hasCorruptedFound) {
->>>>>>> 41f80c9 (A-CodingStandard: fix style issues and formatting)
+            if (hascorruptedFound) {
                 System.out.println("Warning: Some saved tasks were corrupted and skipped.");
             }
 
