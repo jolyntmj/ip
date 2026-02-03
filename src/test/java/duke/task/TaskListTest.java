@@ -11,10 +11,14 @@ import duke.exception.DukeException;
  * Unit tests for {@link TaskList}.
  */
 public class TaskListTest {
+<<<<<<< HEAD
     
+=======
+
     /**
      * Tests deleting a valid index removes the correct task and shifts remaining tasks.
      */
+>>>>>>> 41f80c9 (A-CodingStandard: fix style issues and formatting)
     @Test
     public void delete_validIndex_removesAndReturnsTask() throws DukeException {
         TaskList list = new TaskList();
@@ -47,7 +51,7 @@ public class TaskListTest {
 
         list.mark(0);
 
-        assertTrue(list.get(0).isDone()); 
+        assertTrue(list.get(0).isDone());
     }
 
      /**

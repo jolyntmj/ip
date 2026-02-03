@@ -59,10 +59,18 @@ public abstract class Task {
         return this.isDone;
     }
 
+<<<<<<< HEAD
+    public boolean isNotDone() {
+        this.isDone = false;
+        return this.isDone;
+    }
+
+=======
     /**
      * Returns the string representation of this task for saving to storage.
      *
-     * @return Save-friendly string for this task.
+     * @return Save friendly string for this task.
      */
+>>>>>>> 41f80c9 (A-CodingStandard: fix style issues and formatting)
     public abstract String toSaveString();
 }

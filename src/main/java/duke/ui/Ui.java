@@ -115,6 +115,7 @@ public class Ui {
         System.out.println("[" + t.getStatusIcon() + "] " + t.toString());
         printLine();
     }
+<<<<<<< HEAD
     
     /**
      * Prints all tasks in the given task list.
@@ -123,13 +124,23 @@ public class Ui {
      */
     public void printList(TaskList tasks) { 
         printLine();             
+=======
+
+    /**
+     * Prints all tasks in the given task list.
+     *
+     * @param tasks The task list to display.
+     */
+    public void printList(TaskList tasks) {
+        printLine();
+>>>>>>> 41f80c9 (A-CodingStandard: fix style issues and formatting)
         if (tasks.isEmpty()) {
             System.out.println("No tasks in your list.");
-        } else {                 
-            for(int i=0; i < tasks.size(); i++ ) {
+        } else {
+            for (int i=0; i < tasks.size(); i++ ) {
                 Task t = tasks.get(i);
                 System.out.println((i + 1) + ". " + t.toString());
-            }   
+            }
         printLine();
         }
     }

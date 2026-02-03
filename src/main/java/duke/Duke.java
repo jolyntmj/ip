@@ -42,24 +42,29 @@ public class Duke {
             this.tasks = loaded;
     }
 
+<<<<<<< HEAD
+=======
     /**
      * Starts the Duke chatbot.
      *
-     * @param args Command-line arguments (unused).
+     * @param args Command line arguments (unused).
      */
+>>>>>>> 41f80c9 (A-CodingStandard: fix style issues and formatting)
     public static void main(String[] args) {
         new Duke("./data/duke.txt").run();
     }
 
+<<<<<<< HEAD
+=======
 
     /**
-     * Runs the main input-processing loop until the user types "bye".
+     * Runs the main input processing loop until the user types "bye".
      */
+>>>>>>> 41f80c9 (A-CodingStandard: fix style issues and formatting)
     public void run() {
-        
         ui.printGreeting();
-        
-        while(true) {
+
+        while (true) {
 
             String input = ui.readCommand();
 
@@ -73,12 +78,12 @@ public class Duke {
             } catch (DukeException e) {
                 ui.printError(e.getMessage());
             }
-            
+
             if (input.equalsIgnoreCase("bye")) {
                 ui.printGoodbye();
                 break;
             }
-        } 
+        }
     }
 
     /**
@@ -93,12 +98,12 @@ public class Duke {
 
         switch (command) {
         case LIST -> ui.printList(tasks);
-        case TODO -> todo(input); 
+        case TODO -> todo(input);
         case DEADLINE -> deadline(input);
         case EVENT -> event(input);
-        case MARK -> mark(input); 
+        case MARK -> mark(input);
         case DELETE -> delete(input);
-        case BYE -> { /* do nothing here; your while-loop exits on bye */ }
+        case BYE -> { /* do nothing here; your while loop exits on bye */ }
         case UNKNOWN -> throw new DukeException(
                 "Unknown command. Please enter the correct command. Eg. event project meeting /from Mon 2pm /to 4pm");
         }
@@ -112,7 +117,7 @@ public class Duke {
      */
     public void mark(String input) throws DukeException {
         int index = parser.parseIndex(input);
-    
+
         if (index < 0 || index >= tasks.size()) {
             throw new DukeException("That task number does not exist.");
         }
@@ -149,7 +154,6 @@ public class Duke {
      * @throws DukeException If the deadline format is invalid.
      */
     public void deadline(String input) throws DukeException {
-        
         Deadline deadline = parser.parseDeadline(input);
         ui.printAdded(deadline, tasks.size());
         tasks.add(deadline);
