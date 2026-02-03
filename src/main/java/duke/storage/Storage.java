@@ -28,8 +28,15 @@ public class Storage {
     }
 
     public List<Task> load() throws DukeException {
+<<<<<<< HEAD
         boolean corruptedFound = false;
     
+=======
+        File file = new File(filePath);
+        List<Task> tasks = new ArrayList<>();
+        boolean hasCorruptedFound = false;
+
+>>>>>>> 41f80c9 (A-CodingStandard: fix style issues and formatting)
         try {
             File f = new File(filePath);
 
@@ -68,7 +75,7 @@ public class Storage {
 
                 Task task = parseTask(remaining);
                 if (task == null) {
-                    corruptedFound = true;
+                    hasCorruptedFound = true;
                     continue;
                 }
 
@@ -78,8 +85,14 @@ public class Storage {
 
                 tasks.add(task);
             }
+<<<<<<< HEAD
             s.close();
             if (corruptedFound) {
+=======
+            scanner.close();
+
+            if (hasCorruptedFound) {
+>>>>>>> 41f80c9 (A-CodingStandard: fix style issues and formatting)
                 System.out.println("Warning: Some saved tasks were corrupted and skipped.");
             }
             return tasks;

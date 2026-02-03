@@ -16,7 +16,9 @@ public class Event extends Task {
     @Override
     public String toString() {
         DateTimeFormatter out = DateTimeFormatter.ofPattern("MMM dd yyyy h:mma");
-        return "[E][" + getStatusIcon() + "]" + super.toString() + " (start: " + start.format(out) + " due: " + end.format(out) + ")";
+        return "[E][" + getStatusIcon() + "]" + super.toString()
+            + " (start: " + start.format(out)
+            + " due: " + end.format(out) + ")";
     }
 
     @Override
@@ -24,6 +26,14 @@ public class Event extends Task {
         return "[E]";
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * Returns the string representation of this event for saving to storage.
+     *
+     * @return Save friendly string for an event.
+     */
+>>>>>>> 41f80c9 (A-CodingStandard: fix style issues and formatting)
     @Override
     public String toSaveString() {
         DateTimeFormatter out = DateTimeFormatter.ofPattern("MMM dd yyyy h:mma");

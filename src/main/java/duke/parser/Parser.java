@@ -15,7 +15,6 @@ public class Parser {
 
     public CommandType parseCommandType(String input) {
         String firstWord = input.trim().split("\\s+", 2)[0].toLowerCase();
-    
         return switch (firstWord) {
         case "list" -> CommandType.LIST;
         case "todo" -> CommandType.TODO;
@@ -27,13 +26,25 @@ public class Parser {
         default -> CommandType.UNKNOWN;
         };
     }
+<<<<<<< HEAD
     
+=======
+
+    /**
+     * Parses a one based task number from the input and converts it to a zero based index.
+     * Example: {@code "mark 2"} returns {@code 1}.
+     *
+     * @param input Full user input containing a task number.
+     * @return Zero based index of the task.
+     * @throws DukeException If the task number is missing or not a valid integer.
+     */
+>>>>>>> 41f80c9 (A-CodingStandard: fix style issues and formatting)
     public int parseIndex(String input) throws DukeException {
         String[] parts = input.split(" ", 2);
 
         if (parts.length < 2 || parts[1].trim().isEmpty()) {
             throw new DukeException("Please specify a task number.");
-        }        
+        }
 
         int index;
 
@@ -64,7 +75,6 @@ public class Parser {
         if (remainder.isEmpty()) {
             throw new DukeException("The description and /by of a deadline cannot be empty!");
         }
-    
 
         String[] parts = remainder.split("/by", 2);
 
@@ -90,7 +100,7 @@ public class Parser {
             throw new DukeException("Invalid date format. Use yyy-MM-dd HHmm (eg. 2019-12-02 1800)");
         }
 
-        return new Deadline(description,by);
+        return new Deadline(description, by);
     }
 
     public Event parseEvent(String input) throws DukeException {
@@ -139,7 +149,7 @@ public class Parser {
         if (start.isEmpty()) {
             throw new DukeException("The /from of an event cannot be empty!");
         }
-    
+
         if (end.isEmpty()) {
             throw new DukeException("The /to of an event cannot be empty!");
         }
