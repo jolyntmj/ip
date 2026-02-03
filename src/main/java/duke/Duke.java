@@ -33,25 +33,19 @@ public class Duke {
             this.tasks = loaded;
     }
 
-<<<<<<< HEAD
-=======
     /**
      * Starts the Duke chatbot.
      *
      * @param args Command line arguments (unused).
      */
->>>>>>> 41f80c9 (A-CodingStandard: fix style issues and formatting)
     public static void main(String[] args) {
         new Duke("./data/duke.txt").run();
     }
 
-<<<<<<< HEAD
-=======
 
     /**
      * Runs the main input processing loop until the user types "bye".
      */
->>>>>>> 41f80c9 (A-CodingStandard: fix style issues and formatting)
     public void run() {
         ui.printGreeting();
 

@@ -22,14 +22,11 @@ public class Deadline extends Task {
         return "[D]";
     }
 
-<<<<<<< HEAD
-=======
     /**
      * Returns the string representation of this deadline for saving to storage.
      *
      * @return Save friendly string for a deadline.
      */
->>>>>>> 41f80c9 (A-CodingStandard: fix style issues and formatting)
     @Override
     public String toSaveString() {
         DateTimeFormatter out = DateTimeFormatter.ofPattern("MMM dd yyyy h:mma");

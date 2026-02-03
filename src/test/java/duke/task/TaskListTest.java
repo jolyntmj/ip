@@ -8,14 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import duke.exception.DukeException;
 
 public class TaskListTest {
-<<<<<<< HEAD
-    
-=======
 
     /**
      * Tests deleting a valid index removes the correct task and shifts remaining tasks.
      */
->>>>>>> 41f80c9 (A-CodingStandard: fix style issues and formatting)
     @Test
     public void delete_validIndex_removesAndReturnsTask() throws DukeException {
         TaskList list = new TaskList();

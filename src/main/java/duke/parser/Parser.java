@@ -26,9 +26,6 @@ public class Parser {
         default -> CommandType.UNKNOWN;
         };
     }
-<<<<<<< HEAD
-    
-=======
 
     /**
      * Parses a one based task number from the input and converts it to a zero based index.
@@ -38,7 +35,6 @@ public class Parser {
      * @return Zero based index of the task.
      * @throws DukeException If the task number is missing or not a valid integer.
      */
->>>>>>> 41f80c9 (A-CodingStandard: fix style issues and formatting)
     public int parseIndex(String input) throws DukeException {
         String[] parts = input.split(" ", 2);
 
