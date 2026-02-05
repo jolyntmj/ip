@@ -39,10 +39,18 @@ public class Ui {
      */
     public void printGreeting() {
         printLine();
-        System.out.println("Hello! I am sealriously");
-        System.out.println("What can I do for you?");
+        System.out.println("Hello! I am sealriously.");
+        System.out.println(
+                "         /\\  /\\\n" +
+                "        /  \\\\/  \\\n" +
+                "     .----------------.\n" +
+                "    |                  |\n" +
+                "    |   (  •́  ω  •̀ )   |\n" +
+                "     '----------------'\n"
+        );
+        System.out.println("What's going on?");
         printLine();
-    }
+    }    
 
     /**
      * Prints the goodbye message shown before exiting.

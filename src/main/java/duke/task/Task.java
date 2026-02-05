@@ -34,14 +34,11 @@ public abstract class Task {
         this.isDone = true;
     }
 
-<<<<<<< Updated upstream
-=======
     /**
      * Returns a string description of this task.
      *
      * @return Task description.
      */
->>>>>>> Stashed changes
     public String getDescription() {
         return this.description;
     }
