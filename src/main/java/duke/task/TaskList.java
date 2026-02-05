@@ -28,6 +28,11 @@ public class TaskList {
         tasks = new ArrayList<>();
     }
 
+    /**
+     * Adds the given task to the task list.
+     *
+     * @param task The task to be added.
+     */
     public void add(Task task) {
         tasks.add(task);
     }
@@ -41,9 +46,16 @@ public class TaskList {
     public Task delete(int index) throws DukeException {
         validateIndex(index);
         return tasks.remove(index);
-    
+
     }
 
+    /**
+     * Marks the task at the specified index as done.
+     *
+     * @param index The index of the task to mark (0-based).
+     * @return The task that was marked as done.
+     * @throws DukeException If the index is invalid.
+     */
     public Task mark(int index) throws DukeException {
         validateIndex(index);
         Task t = get(index);

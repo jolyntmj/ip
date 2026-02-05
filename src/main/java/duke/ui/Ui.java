@@ -41,16 +41,16 @@ public class Ui {
         printLine();
         System.out.println("Hello! I am sealriously.");
         System.out.println(
-                "         /\\  /\\\n" +
-                "        /  \\\\/  \\\n" +
-                "     .----------------.\n" +
-                "    |                  |\n" +
-                "    |   (  •́  ω  •̀ )   |\n" +
-                "     '----------------'\n"
+                "         /\\  /\\\n"
+                + "        /  \\\\/  \\\n"
+                + "     .----------------.\n"
+                + "    |                  |\n"
+                + "    |   (  •́  ω  •̀ )   |\n"
+                + "     '----------------'\n"
         );
         System.out.println("What's going on?");
         printLine();
-    }    
+    }
 
     /**
      * Prints the goodbye message shown before exiting.
@@ -92,11 +92,11 @@ public class Ui {
         System.out.println("Alright. Added to task(s)");
         System.out.println("Please Check:");
         System.out.println(task);
-        System.out.println("REMINDER: " + (size+1) + " pending task(s). Please complete it soon. Good Luck!");
+        System.out.println("REMINDER: " + (size + 1) + " pending task(s). Please complete it soon. Good Luck!");
         printLine();
     }
 
-     /**
+    /**
      * Prints output after deleting a task.
      *
      * @param task The task that was deleted.
@@ -134,11 +134,11 @@ public class Ui {
         if (tasks.isEmpty()) {
             System.out.println("No tasks in your list.");
         } else {
-            for (int i=0; i < tasks.size(); i++ ) {
+            for (int i = 0; i < tasks.size(); i++) {
                 Task t = tasks.get(i);
                 System.out.println((i + 1) + ". " + t);
             }
-        printLine();
+            printLine();
         }
     }
 
@@ -151,15 +151,15 @@ public class Ui {
      */
     public void printFind(TaskList tasks, String match) {
         System.out.println("Here are the matching tasks in your list:");
-        int count=0;
-        for (int i=0; i < tasks.size(); i++) {
+        int count = 0;
+        for (int i = 0; i < tasks.size(); i++) {
             if (tasks.get(i).getDescription().toLowerCase().contains(match)) {
                 System.out.println(tasks.get(i));
                 count++;
-            } 
+            }
         }
 
-        if (count==0) {
+        if (count == 0) {
             System.out.println("No matching task found!");
         }
     }

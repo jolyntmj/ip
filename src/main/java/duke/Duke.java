@@ -21,7 +21,7 @@ public class Duke {
     private Ui ui;
     private Parser parser;
 
-     /**
+    /**
      * Constructs a Duke instance and attempts to load saved tasks from the given file path.
      *
      * @param filePath File path used for loading and saving tasks.
@@ -33,13 +33,13 @@ public class Duke {
 
         TaskList loaded;
         storage = new Storage(filePath);
-            try {
-                loaded =  new TaskList(storage.load());
-            } catch (DukeException e) {
-                ui.printLoadingError();
-                loaded = new TaskList();
-            }
-            this.tasks = loaded;
+        try {
+            loaded = new TaskList(storage.load());
+        } catch (DukeException e) {
+            ui.printLoadingError();
+            loaded = new TaskList();
+        }
+        this.tasks = loaded;
     }
 
     /**
@@ -101,6 +101,8 @@ public class Duke {
         case BYE -> { /* do nothing here; your while loop exits on bye */ }
         case UNKNOWN -> throw new DukeException(
                 "Unknown command. Please enter the correct command.");
+        default -> throw new DukeException(
+            "Unknown command. Please enter the correct command.");
         }
     }
 

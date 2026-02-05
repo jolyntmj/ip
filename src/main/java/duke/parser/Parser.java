@@ -95,7 +95,7 @@ public class Parser {
         if (remainder.isEmpty()) {
             throw new DukeException("The description and /by of a deadline cannot be empty!");
         }
-    
+
 
         String[] parts = remainder.split("DUE: ", 2);
 

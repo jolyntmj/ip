@@ -1,8 +1,9 @@
 package duke.parser;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
 
 import duke.exception.DukeException;
 
@@ -21,7 +22,7 @@ public class ParserTest {
         assertEquals(1, parser.parseIndex("delete  2"));
     }
 
-     /**
+    /**
      * Tests that missing task number causes a {@link DukeException}.
      */
     @Test
