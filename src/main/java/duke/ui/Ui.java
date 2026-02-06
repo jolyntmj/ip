@@ -107,7 +107,7 @@ public class Ui {
         System.out.println("Alright. Tasked removed.");
         System.out.println("Please check:");
         System.out.println(" " + task);
-        System.out.println("REMINDER: " + (size+1) + " pending task(s). Please complete it soon. Good Luck!");
+        System.out.println("REMINDER: " + (size + 1) + " pending task(s). Please complete it soon. Good Luck!");
         printLine();
     }
 
