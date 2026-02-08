@@ -28,46 +28,31 @@ public class Ui {
     }
 
     /**
-     * Prints a horizontal divider line.
-     */
-    public void printLine() {
-        System.out.println("-----------------------------------------------------------------");
-    }
-
-    /**
      * Prints the greeting message shown at the start of the program.
      */
-    public void printGreeting() {
-        printLine();
-        System.out.println("Hello! I am sealriously.");
-        System.out.println(
-                "         /\\  /\\\n"
-                + "        /  \\\\/  \\\n"
-                + "     .----------------.\n"
-                + "    |                  |\n"
-                + "    |   (  •́  ω  •̀ )   |\n"
-                + "     '----------------'\n"
-        );
-        System.out.println("What's going on?");
-        printLine();
+    public String printGreeting() {
+        return  "Hello! I am sealriously.\n" 
+        + "         /\\  /\\\n"
+        + "        /  \\\\/  \\\n"
+        + "     .----------------.\n"
+        + "    |                  |\n"
+        + "    |   (  •́  ω  •̀ )   |\n"
+        + "     '----------------'\n"
+        + "What's going on?\n";
     }
 
     /**
      * Prints the goodbye message shown before exiting.
      */
-    public void printGoodbye() {
-        printLine();
-        System.out.println("Bye. See you soon!");
-        printLine();
+    public String printGoodbye() {
+        return "Bye. See you soon!";
     }
 
     /**
      * Prints a warning indicating saved tasks could not be loaded.
      */
-    public void printLoadingError() {
-        printLine();
-        System.out.println("Warning: Could not load saved tasks. Starting fresh");
-        printLine();
+    public String printLoadingError() {
+        return "Warning: Could not load saved tasks.\nStarting fresh";
     }
 
     /**
@@ -75,10 +60,8 @@ public class Ui {
      *
      * @param message Error message to display.
      */
-    public void printError(String message) {
-        printLine();
-        System.out.println(message);
-        printLine();
+    public String printError(String message) {
+        return message;
     }
 
     /**
@@ -87,13 +70,11 @@ public class Ui {
      * @param task The task that was added.
      * @param size Current number of tasks before adding the new one.
      */
-    public void printAdded(Task task, int size) {
-        printLine();
-        System.out.println("Alright. Added to task(s)");
-        System.out.println("Please Check:");
-        System.out.println(task);
-        System.out.println("REMINDER: " + (size + 1) + " pending task(s). Please complete it soon. Good Luck!");
-        printLine();
+    public String printAdded(Task task, int size) {
+        return "Alright. Added to task(s)\n"
+        + "Please Check:\n"
+        + task + "\n"
+        + "REMINDER: " + size + " pending task(s).\nPlease complete it soon. Good Luck!";
     }
 
     /**
@@ -102,13 +83,11 @@ public class Ui {
      * @param task The task that was deleted.
      * @param size Current number of tasks before deletion.
      */
-    public void printDeleted(Task task, int size) {
-        printLine();
-        System.out.println("Alright. Tasked removed.");
-        System.out.println("Please check:");
-        System.out.println(" " + task);
-        System.out.println("REMINDER: " + (size + 1) + " pending task(s). Please complete it soon. Good Luck!");
-        printLine();
+    public String printDeleted(Task task, int size) {
+        return "Alright. Tasked removed.\n"
+        + "Please check:\n"
+        + " " + task +"\n"
+        + "REMINDER: " + size + " pending task(s).\nPlease complete it soon. Good Luck!";
     }
 
     /**
@@ -116,12 +95,10 @@ public class Ui {
      *
      * @param t The task that was marked as done.
      */
-    public void printMark(Task t) {
-        printLine();
-        System.out.println("Good job for completing! I will mark it as done.");
-        System.out.println("Please check:");
-        System.out.println("[" + t.getStatusIcon() + "] " + t.toString());
-        printLine();
+    public String printMark(Task t, int index) {
+        return "Good job for completing! I will mark it as done.\n"
+        +"Please check:\n"
+        + (index + 1) + ". " + t.toString();
     }
 
     /**
@@ -129,17 +106,18 @@ public class Ui {
      *
      * @param tasks The task list to display.
      */
-    public void printList(TaskList tasks) {
-        printLine();
+    public String printList(TaskList tasks) {
+        StringBuilder sb = new StringBuilder();
+
         if (tasks.isEmpty()) {
-            System.out.println("No tasks in your list.");
+            sb.append("No tasks in your list.");
         } else {
             for (int i = 0; i < tasks.size(); i++) {
                 Task t = tasks.get(i);
-                System.out.println((i + 1) + ". " + t);
+                sb.append((i + 1) + ". " + t + "\n");
             }
-            printLine();
         }
+        return sb.toString();
     }
 
     /**
@@ -149,18 +127,21 @@ public class Ui {
      * @param tasks The task list to search through.
      * @param match The keyword used to match task descriptions.
      */
-    public void printFind(TaskList tasks, String match) {
-        System.out.println("Here are the matching tasks in your list:");
+    public String printFind(TaskList tasks, String match) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Here are the matching tasks in your list:\n");
         int count = 0;
         for (int i = 0; i < tasks.size(); i++) {
             if (tasks.get(i).getDescription().toLowerCase().contains(match)) {
-                System.out.println(tasks.get(i));
+                sb.append(tasks.get(i)+ "\n");
                 count++;
             }
         }
 
         if (count == 0) {
-            System.out.println("No matching task found!");
+            sb.append("No matching task found!");
         }
+
+        return sb.toString();
     }
 }

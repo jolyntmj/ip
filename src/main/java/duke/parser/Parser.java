@@ -93,14 +93,14 @@ public class Parser {
         String remainder = input.substring(8).trim();
 
         if (remainder.isEmpty()) {
-            throw new DukeException("The description and /by of a deadline cannot be empty!");
+            throw new DukeException("The description and DUE: of a deadline cannot be empty!");
         }
 
 
         String[] parts = remainder.split("DUE: ", 2);
 
         if (parts.length < 2) {
-            throw new DukeException("The /by of a deadline cannot be empty!");
+            throw new DukeException("The DUE: of a deadline cannot be empty!");
         }
 
         String description = parts[0];
@@ -111,7 +111,7 @@ public class Parser {
         }
 
         if (byRaw.isEmpty()) {
-            throw new DukeException("The /by of a deadline cannot be empty!");
+            throw new DukeException("The DUE: of a deadline cannot be empty!");
         }
 
         LocalDateTime by;
