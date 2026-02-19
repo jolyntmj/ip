@@ -33,6 +33,7 @@ public class TaskSerializer {
         if (isDone) {
             task.done();
         }
+        applyTagsIfPresent(task, type, parts);
         return task;
     }
 
@@ -40,7 +41,52 @@ public class TaskSerializer {
         if (task == null) {
             throw new DukeException("Cannot save a null task.");
         }
-        return task.toSaveString();
+        String base = task.toSaveString();
+
+        String tagsField = task.tagsToStorageField();
+        if (tagsField == null || tagsField.trim().isEmpty()) {
+            return base;
+        }
+
+        return base + " | " + tagsField.trim();
+    }
+
+    private static void applyTagsIfPresent(Task task, String type, String[] parts) {
+        String tagsField = extractTagsField(type, parts);
+        if (tagsField == null) {
+            return;
+        }
+
+        String trimmed = tagsField.trim();
+        if (trimmed.isEmpty()) {
+            return;
+        }
+
+        for (String token : trimmed.split("\\s+")) {
+            String tag = token.trim();
+            if (tag.isEmpty()) {
+                continue;
+            }
+            task.addTag(tag);
+        }
+    }
+
+    /**
+     * Returns the tags field if present; otherwise null.
+     * Tag field is always the last field (if present).
+     *
+     * Save formats:
+     * Todo:     T | [ ] | desc                 OR  T | [ ] | desc | #fun #school
+     * Deadline: D | [ ] | desc | yyyy-MM-dd HHmm      OR  ... | yyyy-MM-dd HHmm | #fun
+     * Event:    E | [ ] | desc | start | end         OR  ... | start | end | #fun
+     */
+    private static String extractTagsField(String type, String[] parts) {
+        return switch (type) {
+        case TYPE_TODO -> (parts.length == 4 ? parts[3] : null);
+        case TYPE_DEADLINE -> (parts.length == 5 ? parts[4] : null);
+        case TYPE_EVENT -> (parts.length == 6 ? parts[5] : null);
+        default -> null;
+        };
     }
 
     private static String[] splitAndValidate(String line) throws DukeException {

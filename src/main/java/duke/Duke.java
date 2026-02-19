@@ -124,6 +124,9 @@ public class Duke {
         case FIND -> { 
             return find(input); 
         }
+        case TAG -> {
+            return tag(input);
+        }
         case BYE -> { 
             return "";/* do nothing here; your while loop exits on bye */ 
         }
@@ -249,6 +252,20 @@ public class Duke {
 
     public String getGreeting() {
         return ui.printGreeting();
+    }
+    
+    public String tag(String input) throws DukeException {
+        Parser.TagArgs args = parser.parseTagArgs(input);
+    
+        if (args.index < 0 || args.index >= tasks.size()) {
+            throw new DukeException("That task number does not exist.");
+        }
+    
+        Task task = tasks.get(args.index);
+        task.addTag(args.tag);
+        storage.save(tasks);
+    
+        return ui.printTagged(task, args.index, args.tag);
     }
     
 

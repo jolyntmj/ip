@@ -20,6 +20,16 @@ public class Parser {
 
     private static final int SPLIT_LIMIT_TWO_PARTS = 2;
 
+    public static class TagArgs {
+        public final int index;     // zero-based
+        public final String tag;    // raw tag token, e.g. "#fun"
+
+        public TagArgs(int index, String tag) {
+            this.index = index;
+            this.tag = tag;
+        }
+    }
+
     /**
      * Determines the {@link CommandType} based on the first word of the input.
      *
@@ -43,9 +53,38 @@ public class Parser {
         case "mark" -> CommandType.MARK;
         case "delete" -> CommandType.DELETE;
         case "find" -> CommandType.FIND;
+        case "tag" -> CommandType.TAG;
         case "bye" -> CommandType.BYE;
         default -> CommandType.UNKNOWN;
         };
+    }
+
+    /**
+     * Parses tag command arguments.
+     * Format: tag INDEX #tag
+     * Example: "tag 3 #fun" -> index=2, tag="#fun"
+     */
+    public TagArgs parseTagArgs(String input) throws DukeException {
+        assert input != null : "Parser.parseTagArgs: input should not be null";
+
+        String[] parts = input.trim().split("\\s+", 3);
+        if (parts.length < 3) {
+            throw new DukeException("Usage: tag TASK_NUMBER #tag");
+        }
+
+        int index;
+        try {
+            index = Integer.parseInt(parts[1].trim()) - 1;
+        } catch (NumberFormatException e) {
+            throw new DukeException("Task number must be a number.");
+        }
+
+        String tag = parts[2].trim();
+        if (tag.isEmpty()) {
+            throw new DukeException("Tag cannot be empty. Usage: tag TASK_NUMBER #tag");
+        }
+
+        return new TagArgs(index, tag);
     }
 
     /**
@@ -60,8 +99,6 @@ public class Parser {
         assert input != null : "Parser.parseIndex: input should not be null";
 
         String[] parts = input.split(" ", 2);
-
-        assert input != null : "Parser.parseIndex: input should not be null";
 
         if (parts.length < 2 || parts[1].trim().isEmpty()) {
             throw new DukeException("Please specify a task number.");
