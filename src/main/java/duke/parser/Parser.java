@@ -57,6 +57,8 @@ public class Parser {
      * @throws DukeException If the task number is missing or not a valid integer.
      */
     public int parseIndex(String input) throws DukeException {
+        assert input != null : "Parser.parseIndex: input should not be null";
+
         String[] parts = input.split(" ", 2);
 
         assert input != null : "Parser.parseIndex: input should not be null";
@@ -99,11 +101,11 @@ public class Parser {
 
     /**
      * Parses a deadline command into a {@link Deadline} object.
-     * Expected format: {@code "deadline <desc> /by yyyy-MM-dd HHmm"}.
+     * Expected format: {@code "deadline <desc> DUE: yyyy-MM-dd HHmm"}.
      *
      * @param input Full user input string.
      * @return Parsed {@link Deadline}.
-     * @throws DukeException If description or "/by" is missing, or the datetime format is invalid.
+     * @throws DukeException If description or "DUE:" is missing, or the datetime format is invalid.
      */
     public Deadline parseDeadline(String input) throws DukeException {
         assert input != null : "Parser.parseDeadline: input should not be null";

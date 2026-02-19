@@ -18,6 +18,8 @@ public class TaskList {
      * @param tasks Backing list of tasks.
      */
     public TaskList(List<Task> tasks) {
+        assert tasks != null : "TaskList backing list should not be null";
+
         this.tasks = tasks;
     }
 
@@ -34,6 +36,8 @@ public class TaskList {
      * @param task The task to be added.
      */
     public void add(Task task) {
+        assert task != null : "TaskList.add: task should not be null";
+
         tasks.add(task);
     }
 
@@ -70,6 +74,8 @@ public class TaskList {
      * @return {@code task} when the index is provided.
      */
     public Task get(int index) {
+        assert index >= 0 && index < tasks.size() : "TaskList.get: index out of bounds: " + index;
+
         return tasks.get(index);
     }
 
@@ -90,7 +96,7 @@ public class TaskList {
      * @throw DukeException If the index is not within range.
      */
     private void validateIndex(int index) throws DukeException {
-        if (index < 0 || index >= tasks.size()) {
+        if (index < 0 || index >= (tasks.size() + 1)) {
             throw new DukeException("That task number does not exist.");
         }
     }
