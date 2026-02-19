@@ -133,7 +133,7 @@ public class Duke {
         tasks.mark(index);
         storage.save(tasks);
 
-        ui.printMark(tasks.get(index));
+        ui.printMark(tasks.get(index), index);
 
     }
 
@@ -191,7 +191,7 @@ public class Duke {
         int index = parser.parseIndex(input);
         tasks.delete(index);
         storage.save(tasks);
-        ui.printDeleted(tasks.get(index), index);
+        ui.printDeleted(tasks.get(index), tasks.size());
     }
 
     /**

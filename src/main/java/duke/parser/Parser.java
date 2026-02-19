@@ -27,9 +27,6 @@ public class Parser {
      * @return Parsed {@code CommandType}. Returns {@code UNKNOWN} if the command is not recognised.
      */
     public CommandType parseCommandType(String input) {
-<<<<<<< Updated upstream
-        String firstWord = input.trim().split("\\s+", 2)[0].toLowerCase();
-=======
         assert input != null : "Parser.parseCommandType: input should not be null";
 
         String trimmed = input.trim();
@@ -38,7 +35,6 @@ public class Parser {
         }
         String firstWord = trimmed.split("\\s+", 2)[0].toLowerCase();
 
->>>>>>> Stashed changes
         return switch (firstWord) {
         case "list" -> CommandType.LIST;
         case "todo" -> CommandType.TODO;
@@ -61,13 +57,9 @@ public class Parser {
      * @throws DukeException If the task number is missing or not a valid integer.
      */
     public int parseIndex(String input) throws DukeException {
-<<<<<<< Updated upstream
         String[] parts = input.split(" ", 2);
-=======
-        assert input != null : "Parser.parseIndex: input should not be null";
 
-        String[] parts = input.trim().split("\\s+", SPLIT_LIMIT_TWO_PARTS);
->>>>>>> Stashed changes
+        assert input != null : "Parser.parseIndex: input should not be null";
 
         if (parts.length < 2 || parts[1].trim().isEmpty()) {
             throw new DukeException("Please specify a task number.");
@@ -80,9 +72,7 @@ public class Parser {
         } catch (NumberFormatException e) {
             throw new DukeException("Task number must be a number.");
         }
-
         return index;
-
     }
 
     /**
@@ -94,14 +84,10 @@ public class Parser {
      * @throws DukeException If the description is missing.
      */
     public String parseTodo(String input) throws DukeException {
-<<<<<<< Updated upstream
-        String[] parts = input.split(" ", 2);
-=======
         assert input != null : "Parser.parseTodo: input should not be null";
         assert input.trim().toLowerCase().startsWith("todo") : "parseTodo called with non-todo input";
 
         String description = extractRemainder(input);
->>>>>>> Stashed changes
 
         if (description.isEmpty()) {
             throw new DukeException("The description of a todo cannot be empty!");
@@ -120,41 +106,6 @@ public class Parser {
      * @throws DukeException If description or "/by" is missing, or the datetime format is invalid.
      */
     public Deadline parseDeadline(String input) throws DukeException {
-<<<<<<< Updated upstream
-        String remainder = input.substring(8).trim();
-
-        if (remainder.isEmpty()) {
-            throw new DukeException("The description and /by of a deadline cannot be empty!");
-        }
-
-
-        String[] parts = remainder.split("DUE: ", 2);
-
-        if (parts.length < 2) {
-            throw new DukeException("The /by of a deadline cannot be empty!");
-        }
-
-        String description = parts[0];
-        String byRaw = parts[1].trim();
-
-        if (description.isEmpty()) {
-            throw new DukeException("The description of a deadline cannot be empty!");
-        }
-
-        if (byRaw.isEmpty()) {
-            throw new DukeException("The /by of a deadline cannot be empty!");
-        }
-
-        LocalDateTime by;
-        try {
-            by = LocalDateTime.parse(byRaw, FORMAT);
-        } catch (Exception e) {
-            throw new DukeException("Invalid date format. Use yyy-MM-dd HHmm (eg. 2019-12-02 1800)");
-        }
-
-        return new Deadline(description, by);
-    }
-=======
         assert input != null : "Parser.parseDeadline: input should not be null";
         assert input.trim().toLowerCase().startsWith("deadline") : "parseDeadline called with non-deadline input";
     
@@ -168,7 +119,6 @@ public class Parser {
     
         return new Deadline(description, parseDateTime(byRaw));
     }    
->>>>>>> Stashed changes
 
     /**
      * Parses an event command into an {@link Event} object.
@@ -179,67 +129,6 @@ public class Parser {
      * @throws DukeException If description, "START: ", or "DUE: " is missing, or the datetime format is invalid.
      */
     public Event parseEvent(String input) throws DukeException {
-<<<<<<< Updated upstream
-        String remainder = input.substring(5).trim();
-
-        if (remainder.isEmpty()) {
-            throw new DukeException("The description, START:  and DUE:  of an event cannot be empty!");
-        }
-
-        if (remainder.startsWith("START: ")) {
-            if (!remainder.contains("DUE: ")) {
-                throw new DukeException("The description and DUE:  of an event cannot be empty!");
-            }
-        }
-
-        if (remainder.startsWith("DUE: ")) {
-            throw new DukeException("The description and START:  of an event cannot be empty!");
-        }
-
-        String[] parts = remainder.split("START: ", 2);
-
-        if (parts.length < 2) {
-            if (remainder.contains("DUE: ")) {
-                throw new DukeException("The START of an event cannot be empty!");
-            } else {
-                throw new DukeException("The START and DUE of an event cannot be empty!");
-            }
-        }
-
-        String description = parts[0].trim();
-        String firstSplit = parts[1].trim();
-
-        if (description.isEmpty()) {
-            throw new DukeException("The description of an event cannot be empty!");
-        }
-
-        String[] secondParting = firstSplit.split("DUE: ", 2);
-
-        if (secondParting.length < 2) {
-            throw new DukeException("The DUE: of an event cannot be empty!");
-        }
-
-        String start = secondParting[0].trim();
-        String end = secondParting[1].trim();
-
-        if (start.isEmpty()) {
-            throw new DukeException("The START: of an event cannot be empty!");
-        }
-
-        if (end.isEmpty()) {
-            throw new DukeException("The DUE: of an event cannot be empty!");
-        }
-        LocalDateTime startTime;
-        LocalDateTime endTime;
-        try {
-            startTime = LocalDateTime.parse(start, FORMAT);
-            endTime = LocalDateTime.parse(end, FORMAT);
-        } catch (Exception e) {
-            throw new DukeException("Invalid date format. Use yyy-MM-dd HHmm (eg. 2019-12-02 1800)");
-        }
-
-        return new Event(description, startTime, endTime);
-=======
         assertIsEventCommand(input);
     
         String remainder = extractAndValidateEventRemainder(input);
@@ -250,10 +139,8 @@ public class Parser {
         LocalDateTime end = parseDateTime(parts.endRaw);
     
         return new Event(parts.description, start, end);
->>>>>>> Stashed changes
     }
     
-
     /**
      * Extracts the description keyword from a {@code find} command.
      *
@@ -262,14 +149,10 @@ public class Parser {
      * @throws DukeException If the find command does not contain a keyword.
      */
     public String parseDescription(String input) throws DukeException {
-<<<<<<< Updated upstream
-        String[] parts = input.split("find", 2);
-=======
         assert input != null : "Parser.parseDescription: input should not be null";
         assert input.trim().toLowerCase().startsWith("find") : "parseDescription called with non-find input";
 
         String keyword = extractRemainder(input);
->>>>>>> Stashed changes
 
         if (keyword.isEmpty()) {
             throw new DukeException("The description of a find cannot be empty!");
@@ -371,7 +254,4 @@ public class Parser {
         }
         return trimmed;
     }
-    
-    
-    
 }
