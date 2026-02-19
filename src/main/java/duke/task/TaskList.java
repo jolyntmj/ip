@@ -104,4 +104,9 @@ public class TaskList {
     public boolean isEmpty() {
         return tasks.isEmpty();
     }
+
+    public List<Task> getTasks() {
+        return this.tasks;
+    }
+    
 }

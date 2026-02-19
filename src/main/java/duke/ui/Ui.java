@@ -1,5 +1,7 @@
 package duke.ui;
 import java.util.Scanner;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import duke.task.Task;
 import duke.task.TaskList;
@@ -107,17 +109,13 @@ public class Ui {
      * @param tasks The task list to display.
      */
     public String printList(TaskList tasks) {
-        StringBuilder sb = new StringBuilder();
-
         if (tasks.isEmpty()) {
-            sb.append("No tasks in your list.");
-        } else {
-            for (int i = 0; i < tasks.size(); i++) {
-                Task t = tasks.get(i);
-                sb.append((i + 1) + ". " + t + "\n");
-            }
+            return "No tasks in your list.";
         }
-        return sb.toString();
+
+        return IntStream.range(0, tasks.size())
+                .mapToObj(i -> (i + 1) + ". " + tasks.get(i))
+                .collect(Collectors.joining("\n"));
     }
 
     /**
@@ -128,20 +126,15 @@ public class Ui {
      * @param match The keyword used to match task descriptions.
      */
     public String printFind(TaskList tasks, String match) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Here are the matching tasks in your list:\n");
-        int count = 0;
-        for (int i = 0; i < tasks.size(); i++) {
-            if (tasks.get(i).getDescription().toLowerCase().contains(match)) {
-                sb.append(tasks.get(i)+ "\n");
-                count++;
-            }
+        String matches = tasks.getTasks().stream()
+                .filter(t -> t.getDescription().toLowerCase().contains(match.toLowerCase()))
+                .map(Task::toString)
+                .collect(Collectors.joining("\n"));
+    
+        if (matches.isEmpty()) {
+            return "Here are the matching tasks in your list:\nNo matching task found!";
         }
-
-        if (count == 0) {
-            sb.append("No matching task found!");
-        }
-
-        return sb.toString();
-    }
+    
+        return "Here are the matching tasks in your list:\n" + matches;
+    }    
 }
