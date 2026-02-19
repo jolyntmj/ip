@@ -34,6 +34,9 @@ public class Storage {
      * @param filePath File path used for storing tasks.
      */
     public Storage(String filePath) {
+        assert filePath != null : "Storage filePath should not be null";
+        assert !filePath.trim().isEmpty() : "Storage filePath should not be empty";
+
         this.filePath = filePath;
         this.serializer = new TaskSerializer();
     }
@@ -95,6 +98,8 @@ public class Storage {
      * @throws DukeException If an IO error occurs while writing the file.
      */
     public void save(TaskList tasks) throws DukeException {
+        assert tasks != null : "Storage.save: tasks should not be null";
+
         try {
             File file = new File(filePath);
             File parent = file.getParentFile();
@@ -164,6 +169,8 @@ public class Storage {
          * @return Storage string line for the task.
          */
         String toStorageString(Task task) {
+            assert task != null : "toStorageString: task should not be null";
+
             String doneFlag = task.isDone() ? "1" : "0";
             return doneFlag + " | " + task.toSaveString();
         }
