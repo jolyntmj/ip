@@ -41,6 +41,6 @@ public class Todo extends Task {
      */
     @Override
     public String toSaveString() {
-        return "todo " + description;
+        return "T | " + getStatusIcon() + " | " + description;
     }
 }

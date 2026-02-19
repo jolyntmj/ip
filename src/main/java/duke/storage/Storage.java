@@ -19,6 +19,11 @@ import duke.task.Todo;
 
 /**
  * Handles loading tasks from and saving tasks to a local file.
+ *
+ * Storage format (one task per line):
+ * T | [ ] | read book
+ * D | [X] | return book | 2026-02-20 1800
+ * E | [ ] | meeting | 2026-02-20 1400 | 2026-02-20 1600
  */
 public class Storage {
 
@@ -27,221 +32,84 @@ public class Storage {
 
     private final String filePath;
     private final TaskSerializer serializer;
+    private boolean lastLoadHadCorruptedLines = false;
 
-    /**
-     * Constructs a {@code Storage} that reads from and writes to the given file path.
-     *
-     * @param filePath File path used for storing tasks.
-     */
+    public boolean lastLoadHadCorruptedLines() {
+        return lastLoadHadCorruptedLines;
+    }
+
     public Storage(String filePath) {
-        assert filePath != null : "Storage filePath should not be null";
-        assert !filePath.trim().isEmpty() : "Storage filePath should not be empty";
+        assert filePath != null : "Storage: filePath should not be null";
+        assert !filePath.trim().isEmpty() : "Storage: filePath should not be empty";
 
         this.filePath = filePath;
         this.serializer = new TaskSerializer();
     }
 
-    /**
-     * Loads tasks from the save file.
-     * If the save file does not exist, it will be created and an empty list is returned.
-     *
-     * @return List of loaded tasks.
-     * @throws DukeException If an IO error occurs while reading the file.
-     */
     public List<Task> load() throws DukeException {
+        lastLoadHadCorruptedLines = false;
+    
         File file = new File(filePath);
-        List<Task> tasks = new ArrayList<>();
-        boolean hascorruptedFound = false;
-
         try {
-            if (!file.exists()) {
-                File parent = file.getParentFile();
-                if (parent != null) {
-                    parent.mkdirs();
-                }
-                file.createNewFile();
-                return tasks;
-            }
-
-            Scanner scanner = new Scanner(file);
+            ensureFileExists(file);
+            return readTasksFromFile(file);
+        } catch (IOException e) {
+            throw new DukeException("Error loading saved data: " + e.getMessage());
+        }
+    }
+    
+    private List<Task> readTasksFromFile(File file) throws IOException {
+        List<Task> tasks = new ArrayList<>();
+    
+        try (Scanner scanner = new Scanner(file)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine().trim();
                 if (line.isEmpty()) {
                     continue;
                 }
-
-                Task task = serializer.fromStorageString(line);
-                if (task == null) {
-                    hascorruptedFound = true;
-                    continue;
-                }
-
-                tasks.add(task);
+                addTaskIfValid(tasks, line);
             }
-            scanner.close();
-
-            if (hascorruptedFound) {
-                System.out.println("Warning: Some saved tasks were corrupted and skipped.");
-            }
-
-            return tasks;
-
-        } catch (IOException e) {
-            throw new DukeException("Error loading saved data: " + e.getMessage());
+        }
+        return tasks;
+    }
+    
+    private void addTaskIfValid(List<Task> tasks, String line) {
+        try {
+            tasks.add(serializer.fromStorageString(line));
+        } catch (DukeException e) {
+            lastLoadHadCorruptedLines = true;
+            // Skip corrupted lines but continue.
         }
     }
-
-    /**
-     * Saves the given task list to the save file.
-     *
-     * @param tasks Task list to save.
-     * @throws DukeException If an IO error occurs while writing the file.
-     */
+    
     public void save(TaskList tasks) throws DukeException {
         assert tasks != null : "Storage.save: tasks should not be null";
-
+    
+        File file = new File(filePath);
         try {
-            File file = new File(filePath);
-            File parent = file.getParentFile();
-            if (parent != null) {
-                parent.mkdirs();
-            }
-
-            FileWriter writer = new FileWriter(file);
-
-            for (int i = 0; i < tasks.size(); i++) {
-                Task task = tasks.get(i);
-                writer.write(serializer.toStorageString(task));
-                writer.write(System.lineSeparator());
-            }
-
-            writer.close();
-
+            ensureFileExists(file);
+            writeTasksToFile(file, tasks);
         } catch (IOException e) {
             throw new DukeException("Error saving data: " + e.getMessage());
         }
     }
-
-    /**
-     * Converts tasks to and from their storage format.
-     * Format example:
-     * {@code 1 | todo read book}
-     * {@code 0 | deadline submit report /by 2019-12-02 1800}
-     * {@code 1 | event meeting START: 2019-12-02 1800 DUE: 2019-12-02 2000}
-     */
-    private static class TaskSerializer {
-
-        /**
-         * Converts a stored line into a {@link Task}.
-         *
-         * @param line A single line from the save file.
-         * @return Parsed task, or {@code null} if the line is corrupted.
-         */
-        Task fromStorageString(String line) {
-            String[] parts = line.split("\\|", 2);
-            if (parts.length != 2) {
-                return null;
-            }
-
-            String status = parts[0].trim();
-            String payload = parts[1].trim();
-
-            if ((!status.equals("0") && !status.equals("1")) || payload.isEmpty()) {
-                return null;
-            }
-
-            Task task = parsePayload(payload);
-            if (task == null) {
-                return null;
-            }
-
-            if (status.equals("1")) {
-                task.done();
-            }
-
-            return task;
-        }
-
-        /**
-         * Converts a {@link Task} into its storage line representation.
-         *
-         * @param task Task to convert.
-         * @return Storage string line for the task.
-         */
-        String toStorageString(Task task) {
-            assert task != null : "toStorageString: task should not be null";
-
-            String doneFlag = task.isDone() ? "1" : "0";
-            return doneFlag + " | " + task.toSaveString();
-        }
-
-        private Task parsePayload(String payload) {
-            String[] parts = payload.trim().split("\\s+", 2);
-            String type = parts[0].toLowerCase();
-            String remainder = parts.length > 1 ? parts[1].trim() : "";
-
-            return switch (type) {
-            case "todo" -> parseTodo(remainder);
-            case "deadline" -> parseDeadline(remainder);
-            case "event" -> parseEvent(remainder);
-            default -> null;
-            };
-        }
-
-        private Task parseTodo(String remainder) {
-            if (remainder.isEmpty()) {
-                return null;
-            }
-            return new Todo(remainder);
-        }
-
-        private Task parseDeadline(String remainder) {
-            String[] parts = remainder.split(" DUE: ", 2);
-            if (parts.length < 2) {
-                return null;
-            }
-
-            String description = parts[0].trim();
-            String byRaw = parts[1].trim();
-
-            if (description.isEmpty() || byRaw.isEmpty()) {
-                return null;
-            }
-
-            try {
-                LocalDateTime by = LocalDateTime.parse(byRaw, DATE_FORMAT);
-                return new Deadline(description, by);
-            } catch (DateTimeParseException e) {
-                return null;
-            }
-        }
-
-        private Task parseEvent(String remainder) {
-            String[] parts = remainder.split(" START: ", 2);
-            if (parts.length < 2) {
-                return null;
-            }
-
-            String description = parts[0].trim();
-            String[] timeParts = parts[1].trim().split(" DUE: ", 2);
-            if (timeParts.length < 2) {
-                return null;
-            }
-
-            String startRaw = timeParts[0].trim();
-            String endRaw = timeParts[1].trim();
-
-            if (description.isEmpty() || startRaw.isEmpty() || endRaw.isEmpty()) {
-                return null;
-            }
-
-            try {
-                LocalDateTime start = LocalDateTime.parse(startRaw, DATE_FORMAT);
-                LocalDateTime end = LocalDateTime.parse(endRaw, DATE_FORMAT);
-                return new Event(description, start, end);
-            } catch (DateTimeParseException e) {
-                return null;
+    
+    private void writeTasksToFile(File file, TaskList tasks) throws IOException, DukeException {
+        try (FileWriter writer = new FileWriter(file)) {
+            for (int i = 0; i < tasks.size(); i++) {
+                writer.write(serializer.toStorageString(tasks.get(i)));
+                writer.write(System.lineSeparator());
             }
         }
     }
+    
+    private static void ensureFileExists(File file) throws IOException {
+        File parent = file.getParentFile();
+        if (parent != null) {
+            parent.mkdirs();
+        }
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+    }    
 }

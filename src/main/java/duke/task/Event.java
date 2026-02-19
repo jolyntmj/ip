@@ -9,6 +9,7 @@ public class Event extends Task {
 
     protected LocalDateTime start;
     protected LocalDateTime end;
+    private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy h:mma");
 
     /**
      * Constructs an {@code Event} with the specified description, start time, and end time.
@@ -34,10 +35,9 @@ public class Event extends Task {
      */
     @Override
     public String toString() {
-        DateTimeFormatter out = DateTimeFormatter.ofPattern("MMM dd yyyy h:mma");
         return "[E][" + getStatusIcon() + "] " + super.getDescription()
-            + " (start: " + start.format(out)
-            + " due: " + end.format(out) + ")";
+            + " (start: " + start.format(FORMAT)
+            + " due: " + end.format(FORMAT) + ")";
     }
 
     /**
@@ -57,7 +57,10 @@ public class Event extends Task {
      */
     @Override
     public String toSaveString() {
-        DateTimeFormatter out = DateTimeFormatter.ofPattern("MMM dd yyyy h:mma");
-        return "event " + description + " START: " + this.start.format(out) + " DUE: " + this.end.format(out);
+        return "E | " + getStatusIcon()
+                + " | " + description
+                + " | " + start
+                + " | " + end;
     }
+
 }

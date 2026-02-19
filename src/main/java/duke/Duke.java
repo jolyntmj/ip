@@ -1,5 +1,7 @@
 package duke;
 
+import java.util.List;
+
 import duke.command.CommandType;
 import duke.exception.DukeException;
 import duke.parser.Parser;
@@ -33,15 +35,24 @@ public class Duke {
         this.parser = new Parser();
 
         TaskList loaded;
-        storage = new Storage(filePath);
+
         try {
-            loaded = new TaskList(storage.load());
+            List<Task> loadedTasks = storage.load();
+
+            if (storage.lastLoadHadCorruptedLines()) {
+                ui.printError("Some saved tasks were corrupted and skipped.");
+            }
+
+            loaded = new TaskList(loadedTasks);
+
         } catch (DukeException e) {
             ui.printLoadingError();
             loaded = new TaskList();
         }
+
         this.tasks = loaded;
     }
+
 
     /**
      * Starts the Duke chatbot.
