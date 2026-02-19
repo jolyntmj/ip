@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 public class Deadline extends Task {
 
     protected LocalDateTime by;
+    private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy h:mma");
 
     /**
      * Constructs a {@code Deadline} with the specified description and due date/time.
@@ -27,8 +28,7 @@ public class Deadline extends Task {
      */
     @Override
     public String toString() {
-        DateTimeFormatter out = DateTimeFormatter.ofPattern("MMM dd yyyy h:mma");
-        return "[D][" + getStatusIcon() + "] " + super.getDescription() + " (due: " + by.format(out) + ")";
+        return "[D][" + getStatusIcon() + "] " + super.getDescription() + " (due: " + by.format(FORMAT) + ")";
     }
 
     /**
@@ -48,7 +48,8 @@ public class Deadline extends Task {
      */
     @Override
     public String toSaveString() {
-        DateTimeFormatter out = DateTimeFormatter.ofPattern("MMM dd yyyy h:mma");
-        return "deadline " + description + " DUE: " + by.format(out);
+        return "D | " + getStatusIcon()
+                + " | " + description
+                + " | " + by;
     }
 }

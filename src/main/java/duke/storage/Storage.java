@@ -19,6 +19,11 @@ import duke.task.Todo;
 
 /**
  * Handles loading tasks from and saving tasks to a local file.
+ *
+ * Storage format (one task per line):
+ * T | [ ] | read book
+ * D | [X] | return book | 2026-02-20 1800
+ * E | [ ] | meeting | 2026-02-20 1400 | 2026-02-20 1600
  */
 public class Storage {
 
@@ -27,95 +32,74 @@ public class Storage {
 
     private final String filePath;
     private final TaskSerializer serializer;
+    private boolean lastLoadHadCorruptedLines = false;
 
-    /**
-     * Constructs a {@code Storage} that reads from and writes to the given file path.
-     *
-     * @param filePath File path used for storing tasks.
-     */
+    public boolean lastLoadHadCorruptedLines() {
+        return lastLoadHadCorruptedLines;
+    }
+
     public Storage(String filePath) {
+<<<<<<< Updated upstream
+=======
+        assert filePath != null : "Storage: filePath should not be null";
+        assert !filePath.trim().isEmpty() : "Storage: filePath should not be empty";
+
+>>>>>>> Stashed changes
         this.filePath = filePath;
         this.serializer = new TaskSerializer();
     }
 
-    /**
-     * Loads tasks from the save file.
-     * If the save file does not exist, it will be created and an empty list is returned.
-     *
-     * @return List of loaded tasks.
-     * @throws DukeException If an IO error occurs while reading the file.
-     */
     public List<Task> load() throws DukeException {
+        lastLoadHadCorruptedLines = false;
+    
         File file = new File(filePath);
-        List<Task> tasks = new ArrayList<>();
-        boolean hascorruptedFound = false;
-
         try {
-            if (!file.exists()) {
-                File parent = file.getParentFile();
-                if (parent != null) {
-                    parent.mkdirs();
-                }
-                file.createNewFile();
-                return tasks;
-            }
-
-            Scanner scanner = new Scanner(file);
+            ensureFileExists(file);
+            return readTasksFromFile(file);
+        } catch (IOException e) {
+            throw new DukeException("Error loading saved data: " + e.getMessage());
+        }
+    }
+    
+    private List<Task> readTasksFromFile(File file) throws IOException {
+        List<Task> tasks = new ArrayList<>();
+    
+        try (Scanner scanner = new Scanner(file)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine().trim();
                 if (line.isEmpty()) {
                     continue;
                 }
-
-                Task task = serializer.fromStorageString(line);
-                if (task == null) {
-                    hascorruptedFound = true;
-                    continue;
-                }
-
-                tasks.add(task);
+                addTaskIfValid(tasks, line);
             }
-            scanner.close();
-
-            if (hascorruptedFound) {
-                System.out.println("Warning: Some saved tasks were corrupted and skipped.");
-            }
-
-            return tasks;
-
-        } catch (IOException e) {
-            throw new DukeException("Error loading saved data: " + e.getMessage());
+        }
+        return tasks;
+    }
+    
+    private void addTaskIfValid(List<Task> tasks, String line) {
+        try {
+            tasks.add(serializer.fromStorageString(line));
+        } catch (DukeException e) {
+            lastLoadHadCorruptedLines = true;
+            // Skip corrupted lines but continue.
         }
     }
-
-    /**
-     * Saves the given task list to the save file.
-     *
-     * @param tasks Task list to save.
-     * @throws DukeException If an IO error occurs while writing the file.
-     */
+    
     public void save(TaskList tasks) throws DukeException {
+<<<<<<< Updated upstream
+=======
+        assert tasks != null : "Storage.save: tasks should not be null";
+    
+        File file = new File(filePath);
+>>>>>>> Stashed changes
         try {
-            File file = new File(filePath);
-            File parent = file.getParentFile();
-            if (parent != null) {
-                parent.mkdirs();
-            }
-
-            FileWriter writer = new FileWriter(file);
-
-            for (int i = 0; i < tasks.size(); i++) {
-                Task task = tasks.get(i);
-                writer.write(serializer.toStorageString(task));
-                writer.write(System.lineSeparator());
-            }
-
-            writer.close();
-
+            ensureFileExists(file);
+            writeTasksToFile(file, tasks);
         } catch (IOException e) {
             throw new DukeException("Error saving data: " + e.getMessage());
         }
     }
+<<<<<<< Updated upstream
 
     /**
      * Converts tasks to and from their storage format.
@@ -234,7 +218,25 @@ public class Storage {
                 return new Event(description, start, end);
             } catch (DateTimeParseException e) {
                 return null;
+=======
+    
+    private void writeTasksToFile(File file, TaskList tasks) throws IOException, DukeException {
+        try (FileWriter writer = new FileWriter(file)) {
+            for (int i = 0; i < tasks.size(); i++) {
+                writer.write(serializer.toStorageString(tasks.get(i)));
+                writer.write(System.lineSeparator());
+>>>>>>> Stashed changes
             }
         }
     }
+    
+    private static void ensureFileExists(File file) throws IOException {
+        File parent = file.getParentFile();
+        if (parent != null) {
+            parent.mkdirs();
+        }
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+    }    
 }

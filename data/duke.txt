@@ -1,4 +1,9 @@
+<<<<<<< Updated upstream
 0 | todo return book
 0 | todo return book
 1 | deadline buy book DUE: 2019-10-10 1200
 0 | event steal book START: 2026-01-01 0000 DUE: 2027-01-01 0000
+=======
+E |   | burn book | 2026-01-01T00:00 | 2026-02-01T23:59
+D | X | death note | 2026-01-01T00:00
+>>>>>>> Stashed changes
