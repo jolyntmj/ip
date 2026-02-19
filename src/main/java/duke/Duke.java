@@ -193,9 +193,9 @@ public class Duke {
      */
     public String delete(String input) throws DukeException {
         int index = parser.parseIndex(input);
-        tasks.delete(index);
+        Task deleted = tasks.delete(index);
         storage.save(tasks);
-        return ui.printDeleted(tasks.get(index), tasks.size());
+        return ui.printDeleted(deleted, tasks.size());
     }
 
     /**

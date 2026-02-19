@@ -21,6 +21,8 @@ public class Parser {
      * @return Parsed {@code CommandType}. Returns {@code UNKNOWN} if the command is not recognised.
      */
     public CommandType parseCommandType(String input) {
+        assert input != null : "Parser.parseCommandType: input should not be null";
+
         String firstWord = input.trim().split("\\s+", 2)[0].toLowerCase();
         return switch (firstWord) {
         case "list" -> CommandType.LIST;
@@ -44,6 +46,8 @@ public class Parser {
      * @throws DukeException If the task number is missing or not a valid integer.
      */
     public int parseIndex(String input) throws DukeException {
+        assert input != null : "Parser.parseIndex: input should not be null";
+
         String[] parts = input.split(" ", 2);
 
         if (parts.length < 2 || parts[1].trim().isEmpty()) {
@@ -71,6 +75,9 @@ public class Parser {
      * @throws DukeException If the description is missing.
      */
     public String parseTodo(String input) throws DukeException {
+        assert input != null : "Parser.parseTodo: input should not be null";
+        assert input.trim().toLowerCase().startsWith("todo") : "parseTodo called with non-todo input";
+
         String[] parts = input.split(" ", 2);
 
         if (parts.length < 2 || parts[1].trim().isEmpty()) {
@@ -83,13 +90,16 @@ public class Parser {
 
     /**
      * Parses a deadline command into a {@link Deadline} object.
-     * Expected format: {@code "deadline <desc> /by yyyy-MM-dd HHmm"}.
+     * Expected format: {@code "deadline <desc> DUE: yyyy-MM-dd HHmm"}.
      *
      * @param input Full user input string.
      * @return Parsed {@link Deadline}.
-     * @throws DukeException If description or "/by" is missing, or the datetime format is invalid.
+     * @throws DukeException If description or "DUE:" is missing, or the datetime format is invalid.
      */
     public Deadline parseDeadline(String input) throws DukeException {
+        assert input != null : "Parser.parseTodo: input should not be null";
+        assert input.trim().toLowerCase().startsWith("todo") : "parseTodo called with non-todo input";
+
         String remainder = input.substring(8).trim();
 
         if (remainder.isEmpty()) {
@@ -133,6 +143,9 @@ public class Parser {
      * @throws DukeException If description, "START: ", or "DUE: " is missing, or the datetime format is invalid.
      */
     public Event parseEvent(String input) throws DukeException {
+        assert input != null : "Parser.parseEvent: input should not be null";
+        assert input.trim().toLowerCase().startsWith("event") : "parseEvent called with non-event input";
+
         String remainder = input.substring(5).trim();
 
         if (remainder.isEmpty()) {
@@ -202,6 +215,9 @@ public class Parser {
      * @throws DukeException If the find command does not contain a keyword.
      */
     public String parseDescription(String input) throws DukeException {
+        assert input != null : "Parser.parseDescription: input should not be null";
+        assert input.trim().toLowerCase().startsWith("find") : "parseDescription called with non-find input";
+
         String[] parts = input.split("find", 2);
 
         if (parts.length < 2 || parts[1].trim().isEmpty()) {
