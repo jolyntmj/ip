@@ -114,8 +114,9 @@ public class Ui {
         }
 
         return IntStream.range(0, tasks.size())
-                .mapToObj(i -> (i + 1) + ". " + tasks.get(i))
-                .collect(Collectors.joining("\n"));
+            .mapToObj(i -> (i + 1) + ". " + formatTask(tasks.get(i)))
+            .collect(Collectors.joining("\n"));
+
     }
 
     /**
@@ -137,4 +138,14 @@ public class Ui {
     
         return "Here are the matching tasks in your list:\n" + matches;
     }    
+
+    public String printTagged(Task task, int index, String tag) {
+        return "Tagged task " + (index + 1) + " with " + tag + ":\n"
+                + (index + 1) + ". " + formatTask(task);
+    }
+
+    private String formatTask(Task task) {
+        return task.toString() + task.tagsToDisplay();
+    }
+    
 }

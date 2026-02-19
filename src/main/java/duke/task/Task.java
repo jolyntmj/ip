@@ -1,5 +1,9 @@
 package duke.task;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /**
  * Represents an abstract task in Duke.
  * A task has a description and a completion status.
@@ -7,6 +11,7 @@ package duke.task;
 public abstract class Task {
     protected String description;
     protected boolean isDone;
+    private final Set<String> tags = new LinkedHashSet<>();
 
     /**
      * Constructs a {@code Task} with the specified description.
@@ -72,4 +77,46 @@ public abstract class Task {
      * @return Save friendly string for this task.
      */
     public abstract String toSaveString();
+
+    public void addTag(String tag) {
+        tags.add(normalize(tag));
+    }
+
+    public Set<String> getTags() {
+        return tags;
+    }
+
+    /**
+     * Returns tags formatted for UI display.
+     * Example: " [#fun #school]" or "" if no tags.
+     */
+    public String tagsToDisplay() {
+        if (tags.isEmpty()) {
+            return "";
+        }
+        String tagStr = tags.stream().collect(Collectors.joining(" "));
+        return " [" + tagStr + "]";
+    }
+
+    /**
+     * Returns tags formatted for storage (space-separated), or "" if none.
+     * Example: "#fun #school"
+     */
+    public String tagsToStorageField() {
+        if (tags.isEmpty()) {
+            return "";
+        }
+        return tags.stream().collect(Collectors.joining(" "));
+    }
+
+    private String normalize(String tag) {
+        String t = tag.trim();
+        if (t.isEmpty()) {
+            return t;
+        }
+        if (!t.startsWith("#")) {
+            t = "#" + t;
+        }
+        return t;
+    }
 }
