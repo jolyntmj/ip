@@ -33,14 +33,14 @@ public class Ui {
      * Prints the greeting message shown at the start of the program.
      */
     public String printGreeting() {
-        return  "Hello! I am sealriously.\n" 
-        + "         /\\  /\\\n"
-        + "        /  \\\\/  \\\n"
-        + "     .----------------.\n"
-        + "    |                  |\n"
-        + "    |   (  •́  ω  •̀ )   |\n"
-        + "     '----------------'\n"
-        + "What's going on?\n";
+        return "Hello! I am sealriously.\n"
+            + "         /\\  /\\\n"
+            + "        /  \\\\/  \\\n"
+            + "     .----------------.\n"
+            + "    |                  |\n"
+            + "    |   (  •́  ω  •̀ )   |\n"
+            + "     '----------------'\n"
+            + "What's going on?\n";
     }
 
     /**
@@ -74,9 +74,9 @@ public class Ui {
      */
     public String printAdded(Task task, int size) {
         return "Alright. Added to task(s)\n"
-        + "Please Check:\n"
-        + task + "\n"
-        + "REMINDER: " + size + " pending task(s).\nPlease complete it soon. Good Luck!";
+            + "Please Check:\n"
+            + task + "\n"
+            + "REMINDER: " + size + " pending task(s).\nPlease complete it soon. Good Luck!";
     }
 
     /**
@@ -87,9 +87,9 @@ public class Ui {
      */
     public String printDeleted(Task task, int size) {
         return "Alright. Tasked removed.\n"
-        + "Please check:\n"
-        + " " + task +"\n"
-        + "REMINDER: " + size + " pending task(s).\nPlease complete it soon. Good Luck!";
+            + "Please check:\n"
+            + " " + task + "\n"
+            + "REMINDER: " + size + " pending task(s).\nPlease complete it soon. Good Luck!";
     }
 
     /**
@@ -99,8 +99,8 @@ public class Ui {
      */
     public String printMark(Task t, int index) {
         return "Good job for completing! I will mark it as done.\n"
-        +"Please check:\n"
-        + (index + 1) + ". " + t.toString();
+            + "Please check:\n"
+            + (index + 1) + ". " + t.toString();
     }
 
     /**
@@ -131,21 +131,35 @@ public class Ui {
                 .filter(t -> t.getDescription().toLowerCase().contains(match.toLowerCase()))
                 .map(Task::toString)
                 .collect(Collectors.joining("\n"));
-    
+
         if (matches.isEmpty()) {
             return "Here are the matching tasks in your list:\nNo matching task found!";
         }
-    
-        return "Here are the matching tasks in your list:\n" + matches;
-    }    
 
+        return "Here are the matching tasks in your list:\n" + matches;
+    }
+
+    /**
+     * Returns a confirmation message after tagging a task.
+     *
+     * @param task  The updated task.
+     * @param index Zero-based index of the task.
+     * @param tag   Tag applied to the task.
+     * @return User-facing confirmation message.
+     */
     public String printTagged(Task task, int index, String tag) {
         return "Tagged task " + (index + 1) + " with " + tag + ":\n"
                 + (index + 1) + ". " + formatTask(task);
     }
 
+    /**
+     * Formats a task into a user-facing string for UI output.
+     *
+     * @param task Task to format.
+     * @return Formatted task string.
+     */
     private String formatTask(Task task) {
         return task.toString() + task.tagsToDisplay();
     }
-    
+
 }

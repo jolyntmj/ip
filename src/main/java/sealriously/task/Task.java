@@ -57,6 +57,11 @@ public abstract class Task {
         return this.description;
     }
 
+    /**
+     * Returns a user-facing string representation of the task.
+     *
+     * @return Display string for this task.
+     */
     public String toString() {
         return this.description;
     }
@@ -84,10 +89,20 @@ public abstract class Task {
      */
     public abstract String toSaveString();
 
+    /**
+     * Adds a tag to this task.
+     *
+     * @param tag Tag to add (e.g., "#school").
+     */
     public void addTag(String tag) {
         tags.add(normalize(tag));
     }
 
+    /**
+     * Returns the tags associated with this task.
+     *
+     * @return Set of tags.
+     */
     public Set<String> getTags() {
         return tags;
     }
@@ -115,6 +130,12 @@ public abstract class Task {
         return tags.stream().collect(Collectors.joining(" "));
     }
 
+    /**
+     * Normalizes a tag into a canonical form for storage/consistency.
+     *
+     * @param tag Raw tag.
+     * @return Normalized tag.
+     */
     private String normalize(String tag) {
         String t = tag.trim();
         if (t.isEmpty()) {

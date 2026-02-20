@@ -102,26 +102,26 @@ public class Sealriously {
         CommandType command = parser.parseCommandType(input);
 
         switch (command) {
-        case LIST -> { 
-            return ui.printList(tasks); 
+        case LIST -> {
+            return ui.printList(tasks);
         }
-        case TODO -> { 
-            return todo(input); 
+        case TODO -> {
+            return todo(input);
         }
-        case DEADLINE -> { 
-            return deadline(input); 
+        case DEADLINE -> {
+            return deadline(input);
         }
-        case EVENT -> { 
-            return event(input); 
+        case EVENT -> {
+            return event(input);
         }
-        case MARK -> { 
-            return mark(input); 
+        case MARK -> {
+            return mark(input);
         }
-        case DELETE -> { 
-            return delete(input); 
+        case DELETE -> {
+            return delete(input);
         }
-        case FIND -> { 
-            return find(input); 
+        case FIND -> {
+            return find(input);
         }
         case TAG -> {
             return tag(input);
@@ -233,10 +233,20 @@ public class Sealriously {
     //     return "Sealriously heard: " + input;
     // }
 
+    /**
+     * Creates a chatbot instance using the default storage file path.
+     */
     public Sealriously() {
         this("./data/sealriously.txt");
     }
 
+    /**
+     * Processes user input and returns a response for display in the UI.
+     * This method is the main entry point used by the GUI.
+     *
+     * @param input Raw user input (may be null/blank depending on caller).
+     * @return Response string for the UI.
+     */
     public String getResponse(String input) {
         if (input == null || input.trim().isEmpty()) {
             return ui.printError("Please enter a command.");
@@ -249,10 +259,22 @@ public class Sealriously {
         }
     }
 
+    /**
+     * Returns the greeting message shown when the application starts.
+     *
+     * @return Greeting message.
+     */
     public String getGreeting() {
         return ui.printGreeting();
     }
     
+    /**
+     * Tags an existing task with a tag string.
+     *
+     * @param input Raw tag command input (e.g., "tag 2 #school").
+     * @return Confirmation message including the updated task.
+     * @throws SealriouslyException If the command format is invalid or index is out of range.
+     */
     public String tag(String input) throws SealriouslyException {
         Parser.TagArgs args = parser.parseTagArgs(input);
     
