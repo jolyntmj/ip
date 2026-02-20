@@ -11,6 +11,22 @@ import sealriously.task.Event;
 import sealriously.task.Task;
 import sealriously.task.Todo;
 
+/**
+ * Converts tasks to and from the save file format.
+ *
+ * This class is responsible for:
+ * - Reading a single line from the storage file and turning it into
+ *   the correct Task object (e.g., Todo, Deadline, Event).
+ * - Converting a Task object into a properly formatted string
+ *   for saving back to disk.
+ *
+ * The storage format uses a structured, delimiter-based layout where
+ * each task stores its type, completion status, description,
+ * date-time information, and tags in a fixed order.
+ *
+ * If a line from the save file is malformed or does not follow the
+ * expected format, a SealriouslyException will be thrown.
+ */
 public class TaskSerializer {
     private static final String DELIM_REGEX = "\\s*\\|\\s*";
     private static final String STATUS_DONE = "[X]";
@@ -23,6 +39,13 @@ public class TaskSerializer {
     private static final DateTimeFormatter DATE_FORMAT =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
 
+    /**
+     * Parses a line from the save file into a Task object.
+     *
+     * @param line Raw storage line.
+     * @return Parsed Task.
+     * @throws SealriouslyException If the line format is invalid.
+     */
     public Task fromStorageString(String line) throws SealriouslyException {
         String[] parts = splitAndValidate(line);
 
@@ -38,6 +61,13 @@ public class TaskSerializer {
         return task;
     }
 
+    /**
+     * Serializes a Task into a single-line storage representation.
+     *
+     * @param task Task to serialize.
+     * @return Storage string.
+     * @throws SealriouslyException If task cannot be serialized.
+     */
     public String toStorageString(Task task) throws SealriouslyException {
         if (task == null) {
             throw new SealriouslyException("Cannot save a null task.");
@@ -90,6 +120,13 @@ public class TaskSerializer {
         };
     }
 
+    /**
+     * Splits a storage line into parts and validates basic structure.
+     *
+     * @param line Raw storage line.
+     * @return Parsed parts.
+     * @throws SealriouslyException If the line is invalid.
+     */
     private static String[] splitAndValidate(String line) throws SealriouslyException {
         if (line == null || line.trim().isEmpty()) {
             throw new SealriouslyException("Empty line in save file.");
@@ -102,6 +139,14 @@ public class TaskSerializer {
         return parts;
     }
 
+    /**
+     * Parses the done flag from storage.
+     *
+     * @param status       Status token from storage.
+     * @param originalLine Original line (for error reporting).
+     * @return true if marked as done, false otherwise.
+     * @throws SealriouslyException If the flag is not recognized.
+     */
     private static boolean parseDoneFlag(String status, String originalLine) throws SealriouslyException {
         if (STATUS_NOT_DONE.equals(status)) {
             return false;
@@ -123,6 +168,15 @@ public class TaskSerializer {
         };
     }
 
+    /**
+     * Parses a todo task from storage parts.
+     *
+     * @param description  Task description.
+     * @param parts        Split storage parts.
+     * @param originalLine Original line (for error reporting).
+     * @return Parsed Task.
+     * @throws SealriouslyException If required fields are missing/invalid.
+     */
     private static Task parseTodo(String description, String[] parts, String originalLine) throws SealriouslyException {
         if (parts.length != 3) {
             throw new SealriouslyException("Invalid Todo save line: " + originalLine);
@@ -130,6 +184,15 @@ public class TaskSerializer {
         return new Todo(description);
     }
 
+    /**
+     * Parses a deadline task from storage parts.
+     *
+     * @param description  Task description.
+     * @param parts        Split storage parts.
+     * @param originalLine Original line (for error reporting).
+     * @return Parsed Task.
+     * @throws SealriouslyException If required fields are missing/invalid.
+     */
     private static Task parseDeadline(String description, String[] parts, String originalLine) throws SealriouslyException {
         if (parts.length != 4) {
             throw new SealriouslyException("Invalid Deadline save line: " + originalLine);
@@ -137,6 +200,15 @@ public class TaskSerializer {
         return new Deadline(description, parseDateTime(parts[3], originalLine));
     }
 
+    /**
+     * Parses an event task from storage parts.
+     *
+     * @param description  Task description.
+     * @param parts        Split storage parts.
+     * @param originalLine Original line (for error reporting).
+     * @return Parsed Task.
+     * @throws SealriouslyException If required fields are missing/invalid.
+     */
     private static Task parseEvent(String description, String[] parts, String originalLine) throws SealriouslyException {
         if (parts.length != 5) {
             throw new SealriouslyException("Invalid Event save line: " + originalLine);
@@ -146,6 +218,14 @@ public class TaskSerializer {
         return new Event(description, start, end);
     }
 
+    /**
+     * Parses a LocalDateTime from storage format.
+     *
+     * @param raw          Raw date-time string.
+     * @param originalLine Original line (for error reporting).
+     * @return Parsed LocalDateTime.
+     * @throws SealriouslyException If parsing fails.
+     */
     private static LocalDateTime parseDateTime(String raw, String originalLine) throws SealriouslyException {
         try {
             return LocalDateTime.parse(raw, DATE_FORMAT);
@@ -154,6 +234,14 @@ public class TaskSerializer {
         }
     }
 
+    /**
+     * Ensures a string is non-null and non-blank.
+     *
+     * @param text         Text to validate.
+     * @param errorMessage Message to throw if invalid.
+     * @return Trimmed non-empty text.
+     * @throws SealriouslyException If invalid.
+     */
     private static String requireNonEmpty(String text, String errorMessage) throws SealriouslyException {
         if (text == null || text.trim().isEmpty()) {
             throw new SealriouslyException(errorMessage);

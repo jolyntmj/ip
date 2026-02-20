@@ -7,7 +7,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-
 import sealriously.Sealriously;
 
 /**
@@ -28,6 +27,10 @@ public class MainWindow extends AnchorPane {
     private Image userImage = new Image(this.getClass().getResourceAsStream("/images/DaSlave.png"));
     private Image sealriouslyImage = new Image(this.getClass().getResourceAsStream("/images/DaMaster.png"));
 
+    /**
+     * Initializes UI bindings after the FXML has been loaded.
+     * Binds the scroll pane to always scroll to the latest dialog.
+     */
     @FXML
     public void initialize() {
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
@@ -36,14 +39,15 @@ public class MainWindow extends AnchorPane {
     /** Injects the Sealriously instance */
     public void setSealriously(Sealriously d) {
         sealriously = d;
-    
+
         dialogContainer.getChildren().add(
             DialogBox.getSealriouslyDialog(sealriously.getGreeting(), sealriouslyImage)
         );
     }
 
     /**
-     * Creates two dialog boxes, one echoing user input and the other containing Sealriously's reply and then appends them to
+     * Creates two dialog boxes, one echoing user input and the other 
+     * containing Sealriously's reply and then appends them to
      * the dialog container. Clears the user input after processing.
      */
     @FXML

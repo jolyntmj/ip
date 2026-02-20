@@ -13,12 +13,34 @@ import sealriously.task.Task;
 import sealriously.task.TaskList;
 
 /**
- * Handles loading tasks from and saving tasks to a local file.
+ * Manages persistent storage of tasks in a local file.
  *
- * Storage format (one task per line):
+ * This class is responsible for:
+ * - Loading tasks from a save file into memory when the application starts.
+ * - Writing the current task list back to the file when changes occur.
+ *
+ * Each task is stored on a single line using a delimiter-based format.
+ *
+ * General format:
+ * TYPE | STATUS | DESCRIPTION | [DATE_INFO...] | [TAGS]
+ *
+ * Example storage format:
  * T | [ ] | read book
+ * T | [X] | submit report | #school #important
  * D | [X] | return book | 2026-02-20 1800
+ * D | [ ] | project deadline | 2026-02-25 2359 | #cs2103
  * E | [ ] | meeting | 2026-02-20 1400 | 2026-02-20 1600
+ * E | [X] | presentation | 2026-02-20 1400 | 2026-02-20 1600 | #work
+ *
+ * Where:
+ * - T represents a Todo task
+ * - D represents a Deadline task
+ * - E represents an Event task
+ * - [X] indicates a completed task
+ * - [ ] indicates an incomplete task
+ * - Tags (if present) appear at the end of the line, separated by spaces
+ *
+ * Corrupted or improperly formatted lines are safely skipped during loading.
  */
 public class Storage {
 
@@ -26,10 +48,20 @@ public class Storage {
     private final TaskSerializer serializer;
     private boolean lastLoadHadCorruptedLines = false;
 
+    /**
+     * Returns whether the last load operation encountered corrupted lines that were skipped.
+     *
+     * @return true if at least one corrupted line was detected and skipped.
+     */
     public boolean lastLoadHadCorruptedLines() {
         return lastLoadHadCorruptedLines;
     }
 
+    /**
+     * Creates a storage component that reads/writes tasks from/to the given file path.
+     *
+     * @param filePath Save file path.
+     */
     public Storage(String filePath) {
         if (filePath == null || filePath.trim().isEmpty()) {
             throw new IllegalArgumentException("Storage file path cannot be null/empty.");
@@ -41,6 +73,12 @@ public class Storage {
         this.serializer = new TaskSerializer();
     }
 
+    /**
+     * Loads tasks from disk.
+     *
+     * @return List of tasks loaded from storage.
+     * @throws SealriouslyException If reading fails.
+     */
     public List<Task> load() throws SealriouslyException {
         lastLoadHadCorruptedLines = false;
     
@@ -53,6 +91,13 @@ public class Storage {
         }
     }
     
+    /**
+     * Reads task lines from a file and converts them into Task objects.
+     *
+     * @param file File to read from.
+     * @return List of parsed tasks.
+     * @throws IOException If file I/O fails.
+     */
     private List<Task> readTasksFromFile(File file) throws IOException {
         List<Task> tasks = new ArrayList<>();
     
@@ -68,6 +113,13 @@ public class Storage {
         return tasks;
     }
     
+    /**
+     * Attempts to parse and add a task line into the list.
+     * Corrupted lines are skipped and recorded.
+     *
+     * @param tasks List to append parsed tasks to.
+     * @param line  Raw line from storage file.
+     */
     private void addTaskIfValid(List<Task> tasks, String line) {
         try {
             tasks.add(serializer.fromStorageString(line));
@@ -77,6 +129,12 @@ public class Storage {
         }
     }
     
+    /**
+     * Saves the provided task list to disk.
+     *
+     * @param tasks TaskList to save.
+     * @throws SealriouslyException If saving fails.
+     */
     public void save(TaskList tasks) throws SealriouslyException {
         if (tasks == null) {
             throw new SealriouslyException("Nothing to save (task list is null).");
@@ -92,6 +150,14 @@ public class Storage {
         }
     }
     
+    /**
+     * Writes the tasks into the given file in storage format.
+     *
+     * @param file  Destination file.
+     * @param tasks Task list to serialize.
+     * @throws IOException If file I/O fails.
+     * @throws SealriouslyException If serialization fails.
+     */
     private void writeTasksToFile(File file, TaskList tasks) throws IOException, SealriouslyException {
         try (FileWriter writer = new FileWriter(file)) {
             for (int i = 0; i < tasks.size(); i++) {
@@ -101,6 +167,12 @@ public class Storage {
         }
     }
     
+    /**
+     * Ensures the storage file and its parent directories exist.
+     *
+     * @param file Target file.
+     * @throws IOException If file creation fails.
+     */
     private static void ensureFileExists(File file) throws IOException {
         File parent = file.getParentFile();
         if (parent != null) {

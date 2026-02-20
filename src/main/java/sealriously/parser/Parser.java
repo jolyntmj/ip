@@ -209,16 +209,39 @@ public class Parser {
         return keyword;
     }
 
+    /**
+     * Extracts everything after the first word (command keyword).
+     * For example: "todo read book" -> "read book".
+     *
+     * @param input Raw user input (assumed non-null).
+     * @return The remaining portion after the command keyword, trimmed.
+     */
     private static String extractRemainder(String input) {
         String[] parts = input.trim().split("\\s+", SPLIT_LIMIT_TWO_PARTS);
         return (parts.length < 2) ? "" : parts[1].trim();
     }
     
 
+    /**
+     * Finds the index position of a token within the given text.
+     *
+     * @param text  Text to search within.
+     * @param token Token to locate (case-sensitive).
+     * @return Index of the token, or -1 if not found.
+     */
     private static int indexOfToken(String text, String token) {
         return text.indexOf(token);
     }
 
+    /**
+     * Splits a text into two parts around the first occurrence of a token.
+     * Example: "abc DUE: xyz" split by "DUE:" -> ["abc", "xyz"].
+     *
+     * @param text  Text to split.
+     * @param token Token used as delimiter.
+     * @return A 2-element array containing [beforeToken, afterToken], both trimmed.
+     * @throws SealriouslyException If the token is missing or split result is invalid.
+     */
     private static String[] splitByToken(String text, String token) throws SealriouslyException {
         // Allow flexible whitespace around the token and after it.
         // e.g. "abc DUE: 2026-02-20 1800"
@@ -231,6 +254,13 @@ public class Parser {
         return parts;
     }
 
+    /**
+     * Parses a date-time string using the expected input format.
+     *
+     * @param raw Date-time in "yyyy-MM-dd HHmm" format.
+     * @return Parsed LocalDateTime.
+     * @throws SealriouslyException If parsing fails.
+     */
     private static LocalDateTime parseDateTime(String raw) throws SealriouslyException {
         try {
             return LocalDateTime.parse(raw, FORMAT);
@@ -239,6 +269,14 @@ public class Parser {
         }
     }
 
+    /**
+     * Validates presence and order of START: and DUE: tokens for an event command.
+     *
+     * @param remainder The portion after the "event" keyword.
+     * @param startPos  Index of START: token within remainder.
+     * @param duePos    Index of DUE: token within remainder.
+     * @throws SealriouslyException If required tokens are missing or out of order.
+     */
     private static void validateEventTokens(String remainder, int startPos, int duePos) throws SealriouslyException {
         if (startPos < 0 && duePos < 0) {
             throw new SealriouslyException("The START: and DUE: of an event cannot be empty!");
@@ -254,11 +292,24 @@ public class Parser {
         }
     }
 
+    /**
+     * Asserts that the input is an event command.
+     * This is an internal invariant check (not user input validation).
+     *
+     * @param input Input string expected to start with "event".
+     */
     private static void assertIsEventCommand(String input) {
         assert input != null : "Parser.parseEvent: input should not be null";
         assert input.trim().toLowerCase().startsWith("event") : "parseEvent called with non-event input";
     }
 
+    /**
+     * Extracts the portion after the "event" keyword and ensures it is non-empty.
+     *
+     * @param input Raw user input for the event command.
+     * @return Non-empty remainder used for parsing event details.
+     * @throws SealriouslyException If the remainder is empty.
+     */
     private String extractAndValidateEventRemainder(String input) throws SealriouslyException {
         String remainder = extractRemainder(input);
         if (remainder.isEmpty()) {
@@ -267,11 +318,22 @@ public class Parser {
         return remainder;
     }
     
+    /**
+     * Immutable container for the parsed components of an event command.
+     * Holds description, start raw string and end raw string before date parsing.
+     */
     private static class EventParts {
         private final String description;
         private final String startRaw;
         private final String endRaw;
     
+        /**
+         * Creates an EventParts container.
+         *
+         * @param description Event description (trimmed).
+         * @param startRaw    Raw start date-time string.
+         * @param endRaw      Raw end date-time string.
+         */
         private EventParts(String description, String startRaw, String endRaw) {
             this.description = description;
             this.startRaw = startRaw;
@@ -279,6 +341,13 @@ public class Parser {
         }
     }
     
+    /**
+     * Parses the event remainder into description, start and end portions.
+     *
+     * @param remainder The portion after "event".
+     * @return Parsed EventParts.
+     * @throws SealriouslyException If required fields are missing.
+     */
     private EventParts parseEventParts(String remainder) throws SealriouslyException {
         int startPos = indexOfToken(remainder, TOKEN_START);
         int duePos = indexOfToken(remainder, TOKEN_DUE);
@@ -295,6 +364,14 @@ public class Parser {
         return new EventParts(description, startRaw, endRaw);
     }
     
+    /**
+     * Ensures the given text is non-empty after trimming.
+     *
+     * @param text         Text to validate.
+     * @param errorMessage Error message to throw if invalid.
+     * @return Trimmed text.
+     * @throws SealriouslyException If text is null/blank.
+     */
     private static String requireNonEmpty(String text, String errorMessage) throws SealriouslyException {
         String trimmed = text.trim();
         if (trimmed.isEmpty()) {
@@ -303,6 +380,13 @@ public class Parser {
         return trimmed;
     }
 
+    /**
+     * Ensures input is not null before parsing.
+     *
+     * @param input   Input string.
+     * @param message Error message if input is null.
+     * @throws SealriouslyException If input is null.
+     */
     private static void requireInputNotNull(String input, String message) throws SealriouslyException {
         if (input == null) {
             throw new SealriouslyException(message);
