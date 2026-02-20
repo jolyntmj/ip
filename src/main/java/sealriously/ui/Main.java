@@ -30,6 +30,7 @@ public class Main extends Application {
             FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/view/MainWindow.fxml"));
             AnchorPane ap = fxmlLoader.load();
             Scene scene = new Scene(ap);
+            stage.setTitle("sealriously");
             stage.setScene(scene);
             fxmlLoader.<MainWindow>getController().setSealriously(sealriously); // inject the Sealriously instance
             stage.show();
