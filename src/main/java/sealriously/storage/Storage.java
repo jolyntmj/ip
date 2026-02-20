@@ -1,21 +1,16 @@
-package duke.storage;
+package sealriously.storage;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import duke.exception.DukeException;
-import duke.task.Deadline;
-import duke.task.Event;
-import duke.task.Task;
-import duke.task.TaskList;
-import duke.task.Todo;
+import sealriously.exception.SealriouslyException;
+import sealriously.storage.TaskSerializer;
+import sealriously.task.Task;
+import sealriously.task.TaskList;
 
 /**
  * Handles loading tasks from and saving tasks to a local file.
@@ -27,9 +22,6 @@ import duke.task.Todo;
  */
 public class Storage {
 
-    private static final DateTimeFormatter DATE_FORMAT =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
-
     private final String filePath;
     private final TaskSerializer serializer;
     private boolean lastLoadHadCorruptedLines = false;
@@ -39,6 +31,9 @@ public class Storage {
     }
 
     public Storage(String filePath) {
+        if (filePath == null || filePath.trim().isEmpty()) {
+            throw new IllegalArgumentException("Storage file path cannot be null/empty.");
+        }
         assert filePath != null : "Storage: filePath should not be null";
         assert !filePath.trim().isEmpty() : "Storage: filePath should not be empty";
 
@@ -46,7 +41,7 @@ public class Storage {
         this.serializer = new TaskSerializer();
     }
 
-    public List<Task> load() throws DukeException {
+    public List<Task> load() throws SealriouslyException {
         lastLoadHadCorruptedLines = false;
     
         File file = new File(filePath);
@@ -54,7 +49,7 @@ public class Storage {
             ensureFileExists(file);
             return readTasksFromFile(file);
         } catch (IOException e) {
-            throw new DukeException("Error loading saved data: " + e.getMessage());
+            throw new SealriouslyException("Error loading saved data: " + e.getMessage());
         }
     }
     
@@ -76,13 +71,16 @@ public class Storage {
     private void addTaskIfValid(List<Task> tasks, String line) {
         try {
             tasks.add(serializer.fromStorageString(line));
-        } catch (DukeException e) {
+        } catch (SealriouslyException e) {
             lastLoadHadCorruptedLines = true;
             // Skip corrupted lines but continue.
         }
     }
     
-    public void save(TaskList tasks) throws DukeException {
+    public void save(TaskList tasks) throws SealriouslyException {
+        if (tasks == null) {
+            throw new SealriouslyException("Nothing to save (task list is null).");
+        }
         assert tasks != null : "Storage.save: tasks should not be null";
     
         File file = new File(filePath);
@@ -90,11 +88,11 @@ public class Storage {
             ensureFileExists(file);
             writeTasksToFile(file, tasks);
         } catch (IOException e) {
-            throw new DukeException("Error saving data: " + e.getMessage());
+            throw new SealriouslyException("Error saving data: " + e.getMessage());
         }
     }
     
-    private void writeTasksToFile(File file, TaskList tasks) throws IOException, DukeException {
+    private void writeTasksToFile(File file, TaskList tasks) throws IOException, SealriouslyException {
         try (FileWriter writer = new FileWriter(file)) {
             for (int i = 0; i < tasks.size(); i++) {
                 writer.write(serializer.toStorageString(tasks.get(i)));

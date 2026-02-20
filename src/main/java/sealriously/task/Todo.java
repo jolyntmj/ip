@@ -1,4 +1,4 @@
-package duke.task;
+package sealriously.task;
 
 /**
  * Represents a todo task that only contains a description.

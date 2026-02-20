@@ -1,4 +1,4 @@
-package duke.task;
+package sealriously.task;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -18,6 +18,9 @@ public class Deadline extends Task {
      */
     public Deadline(String description, LocalDateTime by) {
         super(description);
+        if (by == null) {
+            throw new IllegalArgumentException("Deadline time cannot be null.");
+        }
         assert by != null : "Deadline.by should not be null";
 
         this.by = by;

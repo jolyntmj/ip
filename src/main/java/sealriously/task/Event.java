@@ -1,4 +1,4 @@
-package duke.task;
+package sealriously.task;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -20,6 +20,13 @@ public class Event extends Task {
      */
     public Event(String description, LocalDateTime start, LocalDateTime end) {
         super(description);
+        if (start == null || end == null) {
+            throw new IllegalArgumentException("Event start/end cannot be null.");
+        }
+        if (end.isBefore(start)) {
+            throw new IllegalArgumentException("Event end cannot be before start.");
+        }
+
         assert start != null : "Event.start should not be null";
         assert end != null : "Event.end should not be null";
         assert !end.isBefore(start) : "Event end time should not be before start time";

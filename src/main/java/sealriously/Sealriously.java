@@ -1,35 +1,34 @@
-package duke;
+package sealriously;
 
 import java.util.List;
 
-import duke.command.CommandType;
-import duke.exception.DukeException;
-import duke.parser.Parser;
-import duke.storage.Storage;
-import duke.task.Deadline;
-import duke.task.Event;
-import duke.task.Task;
-import duke.task.TaskList;
-import duke.task.Todo;
-import duke.ui.Ui;
-import javafx.scene.web.HTMLEditorSkin.Command;
+import sealriously.command.CommandType;
+import sealriously.exception.SealriouslyException;
+import sealriously.parser.Parser;
+import sealriously.storage.Storage;
+import sealriously.task.Deadline;
+import sealriously.task.Event;
+import sealriously.task.Task;
+import sealriously.task.TaskList;
+import sealriously.task.Todo;
+import sealriously.ui.Ui;
 
 /**
- * Main entry point of the Duke chatbot application.
- * Duke coordinates the UI, storage, task list and parser to execute user commands.
+ * Main entry point of the Sealriously chatbot application.
+ * Sealriously coordinates the UI, storage, task list and parser to execute user commands.
  */
-public class Duke {
+public class Sealriously {
     private TaskList tasks;
     private Storage storage;
     private Ui ui;
     private Parser parser;
 
     /**
-     * Constructs a Duke instance and attempts to load saved tasks from the given file path.
+     * Constructs a Sealriously instance and attempts to load saved tasks from the given file path.
      *
      * @param filePath File path used for loading and saving tasks.
      */
-    public Duke(String filePath) {
+    public Sealriously(String filePath) {
         this.ui = new Ui();
         this.storage = new Storage(filePath);
         this.parser = new Parser();
@@ -45,7 +44,7 @@ public class Duke {
 
             loaded = new TaskList(loadedTasks);
 
-        } catch (DukeException e) {
+        } catch (SealriouslyException e) {
             ui.printLoadingError();
             loaded = new TaskList();
         }
@@ -55,12 +54,12 @@ public class Duke {
 
 
     /**
-     * Starts the Duke chatbot.
+     * Starts the Sealriously chatbot.
      *
      * @param args Command line arguments (unused).
      */
     public static void main(String[] args) {
-        new Duke("./data/duke.txt").run();
+        new Sealriously("./data/sealriously.txt").run();
     }
 
 
@@ -81,7 +80,7 @@ public class Duke {
 
             try {
                 handleInput(input);
-            } catch (DukeException e) {
+            } catch (SealriouslyException e) {
                 ui.printError(e.getMessage());
             }
 
@@ -96,9 +95,9 @@ public class Duke {
      * Determines the command type and dispatches it to the appropriate handler.
      *
      * @param input Full user input string.
-     * @throws DukeException If the command is unknown or contains invalid data.
+     * @throws SealriouslyException If the command is unknown or contains invalid data.
      */
-    public String handleInput(String input) throws DukeException {
+    public String handleInput(String input) throws SealriouslyException {
 
         CommandType command = parser.parseCommandType(input);
 
@@ -130,7 +129,7 @@ public class Duke {
         case BYE -> { 
             return "";/* do nothing here; your while loop exits on bye */ 
         }
-        default -> throw new DukeException("Unknown command.\nPlease enter the correct command.");
+        default -> throw new SealriouslyException("Unknown command.\nPlease enter the correct command.");
     }
     }
 
@@ -139,13 +138,13 @@ public class Duke {
      * Marks the specified task as done.
      *
      * @param input User input string containing the task number.
-     * @throws DukeException If the task number is invalid or out of range.
+     * @throws SealriouslyException If the task number is invalid or out of range.
      */
-    public String mark(String input) throws DukeException {
+    public String mark(String input) throws SealriouslyException {
         int index = parser.parseIndex(input);
 
         if (index < 0 || index >= tasks.size()) {
-            throw new DukeException("That task number does not exist.");
+            throw new SealriouslyException("That task number does not exist.");
         }
 
         tasks.mark(index);
@@ -159,9 +158,9 @@ public class Duke {
      * Adds a todo task based on user input.
      *
      * @param input User input string.
-     * @throws DukeException If the description is missing.
+     * @throws SealriouslyException If the description is missing.
      */
-    public String todo(String input) throws DukeException {
+    public String todo(String input) throws SealriouslyException {
 
         String description = parser.parseTodo(input);
 
@@ -177,9 +176,9 @@ public class Duke {
      * Adds a deadline task based on user input.
      *
      * @param input User input string.
-     * @throws DukeException If the deadline format is invalid.
+     * @throws SealriouslyException If the deadline format is invalid.
      */
-    public String deadline(String input) throws DukeException {
+    public String deadline(String input) throws SealriouslyException {
         Deadline deadline = parser.parseDeadline(input);
         tasks.add(deadline);
         storage.save(tasks);
@@ -190,9 +189,9 @@ public class Duke {
      * Adds an event task based on user input.
      *
      * @param input User input string.
-     * @throws DukeException If the event format is invalid.
+     * @throws SealriouslyException If the event format is invalid.
      */
-    public String event(String input) throws DukeException {
+    public String event(String input) throws SealriouslyException {
         Event event = parser.parseEvent(input);
         tasks.add(event);
         storage.save(tasks);
@@ -203,9 +202,9 @@ public class Duke {
      * Deletes the task at the specified index.
      *
      * @param input User input string containing the task number.
-     * @throws DukeException If the task number is invalid or out of range.
+     * @throws SealriouslyException If the task number is invalid or out of range.
      */
-    public String delete(String input) throws DukeException {
+    public String delete(String input) throws SealriouslyException {
         int index = parser.parseIndex(input);
         Task deleted = tasks.delete(index);
         storage.save(tasks);
@@ -216,9 +215,9 @@ public class Duke {
      * Finds and displays tasks whose descriptions contain the given keyword.
      *
      * @param input The full user input containing the {@code find} command.
-     * @throws DukeException If the find command does not contain a keyword.
+     * @throws SealriouslyException If the find command does not contain a keyword.
      */
-    public String find(String input) throws DukeException {
+    public String find(String input) throws SealriouslyException {
         String match = parser.parseDescription(input).toLowerCase();
         return ui.printFind(tasks, match);
     }
@@ -231,11 +230,11 @@ public class Duke {
      * Generates a response for the user's chat message.
      */
     // public String getResponse(String input) {
-    //     return "Duke heard: " + input;
+    //     return "Sealriously heard: " + input;
     // }
 
-    public Duke() {
-        this("./data/duke.txt");
+    public Sealriously() {
+        this("./data/sealriously.txt");
     }
 
     public String getResponse(String input) {
@@ -245,7 +244,7 @@ public class Duke {
     
         try {
             return handleInput(input.trim());
-        } catch (DukeException e) {
+        } catch (SealriouslyException e) {
             return ui.printError(e.getMessage());
         }
     }
@@ -254,11 +253,11 @@ public class Duke {
         return ui.printGreeting();
     }
     
-    public String tag(String input) throws DukeException {
+    public String tag(String input) throws SealriouslyException {
         Parser.TagArgs args = parser.parseTagArgs(input);
     
         if (args.index < 0 || args.index >= tasks.size()) {
-            throw new DukeException("That task number does not exist.");
+            throw new SealriouslyException("That task number does not exist.");
         }
     
         Task task = tasks.get(args.index);
