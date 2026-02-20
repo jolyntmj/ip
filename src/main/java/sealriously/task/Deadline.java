@@ -7,8 +7,8 @@ import java.time.format.DateTimeFormatter;
  */
 public class Deadline extends Task {
 
-    protected LocalDateTime by;
     private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy h:mma");
+    protected LocalDateTime by;
 
     /**
      * Constructs a {@code Deadline} with the specified description and due date/time.

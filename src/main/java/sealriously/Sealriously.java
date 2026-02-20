@@ -24,6 +24,13 @@ public class Sealriously {
     private Parser parser;
 
     /**
+     * Creates a chatbot instance using the default storage file path.
+     */
+    public Sealriously() {
+        this("./data/sealriously.txt");
+    }
+
+    /**
      * Constructs a Sealriously instance and attempts to load saved tasks from the given file path.
      *
      * @param filePath File path used for loading and saving tasks.
@@ -126,11 +133,11 @@ public class Sealriously {
         case TAG -> {
             return tag(input);
         }
-        case BYE -> { 
-            return "";/* do nothing here; your while loop exits on bye */ 
+        case BYE -> {
+            return ""; /* do nothing here; your while loop exits on bye */
         }
         default -> throw new SealriouslyException("Unknown command.\nPlease enter the correct command.");
-    }
+        }
     }
 
 
@@ -169,7 +176,7 @@ public class Sealriously {
         tasks.add(task);
         storage.save(tasks);
 
-        return  ui.printAdded(task, tasks.size());
+        return ui.printAdded(task, tasks.size());
     }
 
     /**
@@ -222,24 +229,6 @@ public class Sealriously {
         return ui.printFind(tasks, match);
     }
 
-    // public static void main(String[] args) {
-    //     System.out.println("Hello!");
-    // }
-
-    /**
-     * Generates a response for the user's chat message.
-     */
-    // public String getResponse(String input) {
-    //     return "Sealriously heard: " + input;
-    // }
-
-    /**
-     * Creates a chatbot instance using the default storage file path.
-     */
-    public Sealriously() {
-        this("./data/sealriously.txt");
-    }
-
     /**
      * Processes user input and returns a response for display in the UI.
      * This method is the main entry point used by the GUI.
@@ -251,7 +240,7 @@ public class Sealriously {
         if (input == null || input.trim().isEmpty()) {
             return ui.printError("Please enter a command.");
         }
-    
+
         try {
             return handleInput(input.trim());
         } catch (SealriouslyException e) {
@@ -267,7 +256,7 @@ public class Sealriously {
     public String getGreeting() {
         return ui.printGreeting();
     }
-    
+
     /**
      * Tags an existing task with a tag string.
      *
@@ -277,17 +266,15 @@ public class Sealriously {
      */
     public String tag(String input) throws SealriouslyException {
         Parser.TagArgs args = parser.parseTagArgs(input);
-    
+
         if (args.index < 0 || args.index >= tasks.size()) {
             throw new SealriouslyException("That task number does not exist.");
         }
-    
+
         Task task = tasks.get(args.index);
         task.addTag(args.tag);
         storage.save(tasks);
-    
+
         return ui.printTagged(task, args.index, args.tag);
     }
-    
-
 }
