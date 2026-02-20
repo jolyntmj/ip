@@ -57,4 +57,13 @@ public class Deadline extends Task {
                 + " | " + description
                 + " | " + by;
     }
+
+    /**
+     * Returns the due date/time of this deadline.
+     *
+     * @return Due date/time.
+     */
+        public LocalDateTime getBy() {
+            return by;
+        }
 }

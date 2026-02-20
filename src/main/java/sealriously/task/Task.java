@@ -5,8 +5,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Represents an abstract task in Sealriously.
- * A task has a description and a completion status.
+ * Represents a generic task with a description and completion status.
+ *
+ * A task may optionally contain tags. Concrete subclasses
+ * (e.g., Todo, Deadline, Event) extend this class.
  */
 public abstract class Task {
     protected String description;

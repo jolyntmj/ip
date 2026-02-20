@@ -12,32 +12,21 @@ import sealriously.task.Task;
 import sealriously.task.Todo;
 
 /**
- * Converts tasks to and from the save file format.
+ * Converts Task objects to and from their storage string representations.
  *
- * This class is responsible for:
- * - Reading a single line from the storage file and turning it into
- *   the correct Task object (e.g., Todo, Deadline, Event).
- * - Converting a Task object into a properly formatted string
- *   for saving back to disk.
- *
- * The storage format uses a structured, delimiter-based layout where
- * each task stores its type, completion status, description,
- * date-time information, and tags in a fixed order.
- *
- * If a line from the save file is malformed or does not follow the
- * expected format, a SealriouslyException will be thrown.
+ * This class handles:
+ * - Parsing tasks from lines in the save file.
+ * - Serializing tasks into a consistent storage format.
  */
 public class TaskSerializer {
-    private static final String DELIM_REGEX = "\\s*\\|\\s*";
-    private static final String STATUS_DONE = "[X]";
-    private static final String STATUS_NOT_DONE = "[ ]";
 
+    private static final String DELIM_REGEX = "\\s*\\|\\s*";
     private static final String TYPE_TODO = "T";
     private static final String TYPE_DEADLINE = "D";
     private static final String TYPE_EVENT = "E";
-
-    private static final DateTimeFormatter DATE_FORMAT =
+    private static final DateTimeFormatter STORAGE_DT_FORMAT =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+
 
     /**
      * Parses a line from the save file into a Task object.
@@ -72,14 +61,75 @@ public class TaskSerializer {
         if (task == null) {
             throw new SealriouslyException("Cannot save a null task.");
         }
-        String base = task.toSaveString();
-
-        String tagsField = task.tagsToStorageField();
-        if (tagsField == null || tagsField.trim().isEmpty()) {
-            return base;
+    
+        String core = toCoreStorageString(task);
+        String tagsField = toTagsField(task);
+    
+        if (tagsField.isEmpty()) {
+            return core;
         }
+        return core + " | " + tagsField;
+    }
 
-        return base + " | " + tagsField.trim();
+    /**
+     * Builds the core storage string without tags.
+     *
+     * @param task Task to serialize.
+     * @return Core storage string.
+     * @throws SealriouslyException If task type is unknown.
+     */
+    private static String toCoreStorageString(Task task) throws SealriouslyException {
+        String status = task.isDone() ? "[X]" : "[ ]";
+    
+        if (task instanceof Todo) {
+            return "T | " + status + " | " + task.getDescription();
+        }
+        if (task instanceof Deadline) {
+            return toDeadlineStorageString((Deadline) task, status);
+        }
+        if (task instanceof Event) {
+            return toEventStorageString((Event) task, status);
+        }
+    
+        throw new SealriouslyException("Unknown task type: " + task.getClass().getSimpleName());
+    }
+
+    /**
+     * Serializes a Deadline task into storage format.
+     *
+     * @param d Deadline task.
+     * @param status Completion status token.
+     * @return Storage string.
+     */
+    private static String toDeadlineStorageString(Deadline d, String status) {
+        return "D | " + status + " | " + d.getDescription()
+                + " | " + d.getBy().format(STORAGE_DT_FORMAT);
+    }
+
+    /**
+     * Serializes an Event task into storage format.
+     *
+     * @param e Event task.
+     * @param status Completion status token.
+     * @return Storage string.
+     */
+    private static String toEventStorageString(Event e, String status) {
+        return "E | " + status + " | " + e.getDescription()
+                + " | " + e.getStart().format(STORAGE_DT_FORMAT)
+                + " | " + e.getEnd().format(STORAGE_DT_FORMAT);
+    }
+
+    /**
+     * Serializes the tags of a task into storage format.
+     *
+     * @param task Task containing tags.
+     * @return Tags string (empty if none).
+     */
+    private static String toTagsField(Task task) {
+        // adjust based on your Task API:
+        // If you already have tagsToStorageField(), use it.
+        String tags = task.tagsToStorageField();
+        return tags == null ? "" : tags.trim();
     }
 
     /**
@@ -148,11 +198,13 @@ public class TaskSerializer {
      * @throws SealriouslyException If the flag is not recognized.
      */
     private static boolean parseDoneFlag(String status, String originalLine) throws SealriouslyException {
-        if (STATUS_NOT_DONE.equals(status)) {
-            return false;
-        }
-        if (STATUS_DONE.equals(status)) {
+        String s = status == null ? "" : status.trim();
+    
+        if (s.equals("[X]") || s.equals("X")) {
             return true;
+        }
+        if (s.equals("[ ]") || s.isEmpty()) {
+            return false;
         }
         throw new SealriouslyException("Invalid status in save line: " + originalLine);
     }
@@ -178,7 +230,7 @@ public class TaskSerializer {
      * @throws SealriouslyException If required fields are missing/invalid.
      */
     private static Task parseTodo(String description, String[] parts, String originalLine) throws SealriouslyException {
-        if (parts.length != 3) {
+        if (parts.length != 3 && parts.length != 4) {
             throw new SealriouslyException("Invalid Todo save line: " + originalLine);
         }
         return new Todo(description);
@@ -193,10 +245,10 @@ public class TaskSerializer {
      * @return Parsed Task.
      * @throws SealriouslyException If required fields are missing/invalid.
      */
-    private static Task parseDeadline(String description, String[] parts,
-        String originalLine) throws SealriouslyException {
+    private static Task parseDeadline(String description, String[] parts, String originalLine)
+        throws SealriouslyException {
 
-        if (parts.length != 4) {
+        if (parts.length != 4 && parts.length != 5) {
             throw new SealriouslyException("Invalid Deadline save line: " + originalLine);
         }
         return new Deadline(description, parseDateTime(parts[3], originalLine));
@@ -211,10 +263,10 @@ public class TaskSerializer {
      * @return Parsed Task.
      * @throws SealriouslyException If required fields are missing/invalid.
     */
-    private static Task parseEvent(String description, String[] parts,
-        String originalLine) throws SealriouslyException {
+    private static Task parseEvent(String description, String[] parts, String originalLine)
+        throws SealriouslyException {
 
-        if (parts.length != 5) {
+        if (parts.length != 5 && parts.length != 6) {
             throw new SealriouslyException("Invalid Event save line: " + originalLine);
         }
         LocalDateTime start = parseDateTime(parts[3], originalLine);
@@ -230,11 +282,22 @@ public class TaskSerializer {
      * @return Parsed LocalDateTime.
      * @throws SealriouslyException If parsing fails.
      */
-    private static LocalDateTime parseDateTime(String raw, String originalLine) throws SealriouslyException {
+    private static LocalDateTime parseDateTime(String raw, String originalLine)
+        throws SealriouslyException {
+
+        String trimmed = raw == null ? "" : raw.trim();
+
         try {
-            return LocalDateTime.parse(raw, DATE_FORMAT);
-        } catch (DateTimeParseException e) {
-            throw new SealriouslyException("Invalid date/time in save line: " + originalLine);
+            // Canonical storage format
+            return LocalDateTime.parse(trimmed, STORAGE_DT_FORMAT);
+        } catch (DateTimeParseException ignored) {
+            // Fallback: legacy ISO format (e.g. 2026-01-01T00:00)
+            try {
+                return LocalDateTime.parse(trimmed);
+            } catch (DateTimeParseException e) {
+                throw new SealriouslyException(
+                        "Invalid date/time in save line: " + originalLine);
+            }
         }
     }
 

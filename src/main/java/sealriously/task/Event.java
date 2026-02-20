@@ -70,4 +70,22 @@ public class Event extends Task {
                 + " | " + end;
     }
 
+    /**
+     * Returns the start date/time of this event.
+     *
+     * @return Start date/time.
+     */
+    public LocalDateTime getStart() {
+        return start;
+    }
+
+    /**
+     * Returns the end date/time of this event.
+     *
+     * @return End date/time.
+     */
+    public LocalDateTime getEnd() {
+        return end;
+    }
+
 }
