@@ -7,6 +7,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.application.Platform;
 import sealriously.Sealriously;
 
 /**
@@ -59,5 +60,9 @@ public class MainWindow extends AnchorPane {
                 DialogBox.getSealriouslyDialog(response, sealriouslyImage)
         );
         userInput.clear();
+
+        if (input.trim().equalsIgnoreCase("bye")) {
+            Platform.exit();
+        }
     }
 }
