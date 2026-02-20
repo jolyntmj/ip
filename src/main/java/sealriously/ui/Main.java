@@ -1,4 +1,4 @@
-package duke.ui;
+package sealriously.ui;
 
 import java.io.IOException;
 
@@ -8,17 +8,17 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-import duke.Duke;
+import sealriously.Sealriously;
 
 
 /**
- * A GUI for Duke using FXML.
+ * A GUI for Sealriously using FXML.
  */
 public class Main extends Application {
 
-    //private Duke duke = new Duke();
+    //private Sealriously sealriously = new Sealriously();
 
-    private Duke duke = new Duke("./data/duke.txt");
+    private Sealriously sealriously = new Sealriously("./data/sealriously.txt");
 
 
     @Override
@@ -28,7 +28,7 @@ public class Main extends Application {
             AnchorPane ap = fxmlLoader.load();
             Scene scene = new Scene(ap);
             stage.setScene(scene);
-            fxmlLoader.<MainWindow>getController().setDuke(duke);  // inject the Duke instance
+            fxmlLoader.<MainWindow>getController().setSealriously(sealriously);  // inject the Sealriously instance
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();

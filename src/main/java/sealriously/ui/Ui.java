@@ -1,10 +1,10 @@
-package duke.ui;
+package sealriously.ui;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import duke.task.Task;
-import duke.task.TaskList;
+import sealriously.task.Task;
+import sealriously.task.TaskList;
 
 /**
  * Handles all user interaction (reading input and printing output).

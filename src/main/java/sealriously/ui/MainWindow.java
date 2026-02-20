@@ -1,4 +1,4 @@
-package duke.ui;
+package sealriously.ui;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -8,7 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
-import duke.Duke;
+import sealriously.Sealriously;
 
 /**
  * Controller for the main GUI.
@@ -23,36 +23,36 @@ public class MainWindow extends AnchorPane {
     @FXML
     private Button sendButton;
 
-    private Duke duke;
+    private Sealriously sealriously;
 
     private Image userImage = new Image(this.getClass().getResourceAsStream("/images/DaSlave.png"));
-    private Image dukeImage = new Image(this.getClass().getResourceAsStream("/images/DaMaster.png"));
+    private Image sealriouslyImage = new Image(this.getClass().getResourceAsStream("/images/DaMaster.png"));
 
     @FXML
     public void initialize() {
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
     }
 
-    /** Injects the Duke instance */
-    public void setDuke(Duke d) {
-        duke = d;
+    /** Injects the Sealriously instance */
+    public void setSealriously(Sealriously d) {
+        sealriously = d;
     
         dialogContainer.getChildren().add(
-            DialogBox.getDukeDialog(duke.getGreeting(), dukeImage)
+            DialogBox.getSealriouslyDialog(sealriously.getGreeting(), sealriouslyImage)
         );
     }
 
     /**
-     * Creates two dialog boxes, one echoing user input and the other containing Duke's reply and then appends them to
+     * Creates two dialog boxes, one echoing user input and the other containing Sealriously's reply and then appends them to
      * the dialog container. Clears the user input after processing.
      */
     @FXML
     private void handleUserInput() {
         String input = userInput.getText();
-        String response = duke.getResponse(input);
+        String response = sealriously.getResponse(input);
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),
-                DialogBox.getDukeDialog(response, dukeImage)
+                DialogBox.getSealriouslyDialog(response, sealriouslyImage)
         );
         userInput.clear();
     }

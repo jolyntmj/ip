@@ -1,6 +1,6 @@
-package duke;
+package sealriously;
 
-import duke.ui.Main;
+import sealriously.ui.Main;
 
 import javafx.application.Application;
 

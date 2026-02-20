@@ -1,4 +1,4 @@
-package duke.task;
+package sealriously.task;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import duke.exception.DukeException;
+import sealriously.exception.SealriouslyException;
 
 
 /**
@@ -18,7 +18,7 @@ public class TaskListTest {
      * Tests deleting a valid index removes the correct task and shifts remaining tasks.
      */
     @Test
-    public void delete_validIndex_removesAndReturnsTask() throws DukeException {
+    public void delete_validIndex_removesAndReturnsTask() throws SealriouslyException {
         TaskList list = new TaskList();
         list.add(new Todo("read book"));
         list.add(new Todo("sleep"));
@@ -31,19 +31,19 @@ public class TaskListTest {
     }
 
     /**
-     * Tests deleting an invalid index throws {@link DukeException}.
+     * Tests deleting an invalid index throws {@link SealriouslyException}.
      */
     @Test
     public void delete_invalidIndex_throwsException() {
         TaskList list = new TaskList();
-        assertThrows(DukeException.class, () -> list.delete(0));
+        assertThrows(SealriouslyException.class, () -> list.delete(0));
     }
 
     /**
      * Tests marking a valid index marks the task as done.
      */
     @Test
-    public void mark_validIndex_marksTaskDone() throws DukeException {
+    public void mark_validIndex_marksTaskDone() throws SealriouslyException {
         TaskList list = new TaskList();
         list.add(new Todo("gym"));
 
@@ -53,12 +53,12 @@ public class TaskListTest {
     }
 
     /**
-     * Tests marking an invalid index throws {@link DukeException}.
+     * Tests marking an invalid index throws {@link SealriouslyException}.
      */
     @Test
     public void mark_invalidIndex_throwsException() {
         TaskList list = new TaskList();
-        assertThrows(DukeException.class, () -> list.mark(0));
+        assertThrows(SealriouslyException.class, () -> list.mark(0));
     }
 
 }

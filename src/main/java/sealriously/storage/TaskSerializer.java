@@ -1,14 +1,15 @@
-package duke.storage;
+package sealriously.storage;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 
-import duke.exception.DukeException;
-import duke.task.Deadline;
-import duke.task.Event;
-import duke.task.Task;
-import duke.task.Todo;
+import sealriously.exception.SealriouslyException;
+import sealriously.task.Deadline;
+import sealriously.task.Event;
+import sealriously.task.Task;
+import sealriously.task.Todo;
 
 public class TaskSerializer {
     private static final String DELIM_REGEX = "\\s*\\|\\s*";
@@ -22,7 +23,7 @@ public class TaskSerializer {
     private static final DateTimeFormatter DATE_FORMAT =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
 
-    public Task fromStorageString(String line) throws DukeException {
+    public Task fromStorageString(String line) throws SealriouslyException {
         String[] parts = splitAndValidate(line);
 
         String type = parts[0];
@@ -37,9 +38,9 @@ public class TaskSerializer {
         return task;
     }
 
-    public String toStorageString(Task task) throws DukeException {
+    public String toStorageString(Task task) throws SealriouslyException {
         if (task == null) {
-            throw new DukeException("Cannot save a null task.");
+            throw new SealriouslyException("Cannot save a null task.");
         }
         String base = task.toSaveString();
 
@@ -51,6 +52,9 @@ public class TaskSerializer {
         return base + " | " + tagsField.trim();
     }
 
+    /**
+     * Parses and applies tags from the last save-field (if present).
+     */
     private static void applyTagsIfPresent(Task task, String type, String[] parts) {
         String tagsField = extractTagsField(type, parts);
         if (tagsField == null) {
@@ -62,13 +66,10 @@ public class TaskSerializer {
             return;
         }
 
-        for (String token : trimmed.split("\\s+")) {
-            String tag = token.trim();
-            if (tag.isEmpty()) {
-                continue;
-            }
-            task.addTag(tag);
-        }
+        Arrays.stream(trimmed.split("\\s+"))
+                .map(String::trim)
+                .filter(t -> !t.isEmpty())
+                .forEach(task::addTag);
     }
 
     /**
@@ -89,73 +90,73 @@ public class TaskSerializer {
         };
     }
 
-    private static String[] splitAndValidate(String line) throws DukeException {
+    private static String[] splitAndValidate(String line) throws SealriouslyException {
         if (line == null || line.trim().isEmpty()) {
-            throw new DukeException("Empty line in save file.");
+            throw new SealriouslyException("Empty line in save file.");
         }
 
         String[] parts = line.split(DELIM_REGEX);
         if (parts.length < 3) {
-            throw new DukeException("Invalid save line: " + line);
+            throw new SealriouslyException("Invalid save line: " + line);
         }
         return parts;
     }
 
-    private static boolean parseDoneFlag(String status, String originalLine) throws DukeException {
+    private static boolean parseDoneFlag(String status, String originalLine) throws SealriouslyException {
         if (STATUS_NOT_DONE.equals(status)) {
             return false;
         }
         if (STATUS_DONE.equals(status)) {
             return true;
         }
-        throw new DukeException("Invalid status in save line: " + originalLine);
+        throw new SealriouslyException("Invalid status in save line: " + originalLine);
     }
 
     private static Task parseTask(String type, String description, String[] parts, String originalLine)
-            throws DukeException {
+            throws SealriouslyException {
 
         return switch (type) {
         case TYPE_TODO -> parseTodo(description, parts, originalLine);
         case TYPE_DEADLINE -> parseDeadline(description, parts, originalLine);
         case TYPE_EVENT -> parseEvent(description, parts, originalLine);
-        default -> throw new DukeException("Unknown task type in save line: " + originalLine);
+        default -> throw new SealriouslyException("Unknown task type in save line: " + originalLine);
         };
     }
 
-    private static Task parseTodo(String description, String[] parts, String originalLine) throws DukeException {
+    private static Task parseTodo(String description, String[] parts, String originalLine) throws SealriouslyException {
         if (parts.length != 3) {
-            throw new DukeException("Invalid Todo save line: " + originalLine);
+            throw new SealriouslyException("Invalid Todo save line: " + originalLine);
         }
         return new Todo(description);
     }
 
-    private static Task parseDeadline(String description, String[] parts, String originalLine) throws DukeException {
+    private static Task parseDeadline(String description, String[] parts, String originalLine) throws SealriouslyException {
         if (parts.length != 4) {
-            throw new DukeException("Invalid Deadline save line: " + originalLine);
+            throw new SealriouslyException("Invalid Deadline save line: " + originalLine);
         }
         return new Deadline(description, parseDateTime(parts[3], originalLine));
     }
 
-    private static Task parseEvent(String description, String[] parts, String originalLine) throws DukeException {
+    private static Task parseEvent(String description, String[] parts, String originalLine) throws SealriouslyException {
         if (parts.length != 5) {
-            throw new DukeException("Invalid Event save line: " + originalLine);
+            throw new SealriouslyException("Invalid Event save line: " + originalLine);
         }
         LocalDateTime start = parseDateTime(parts[3], originalLine);
         LocalDateTime end = parseDateTime(parts[4], originalLine);
         return new Event(description, start, end);
     }
 
-    private static LocalDateTime parseDateTime(String raw, String originalLine) throws DukeException {
+    private static LocalDateTime parseDateTime(String raw, String originalLine) throws SealriouslyException {
         try {
             return LocalDateTime.parse(raw, DATE_FORMAT);
         } catch (DateTimeParseException e) {
-            throw new DukeException("Invalid date/time in save line: " + originalLine);
+            throw new SealriouslyException("Invalid date/time in save line: " + originalLine);
         }
     }
 
-    private static String requireNonEmpty(String text, String errorMessage) throws DukeException {
+    private static String requireNonEmpty(String text, String errorMessage) throws SealriouslyException {
         if (text == null || text.trim().isEmpty()) {
-            throw new DukeException(errorMessage);
+            throw new SealriouslyException(errorMessage);
         }
         return text.trim();
     }

@@ -1,11 +1,11 @@
-package duke.task;
+package sealriously.task;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Represents an abstract task in Duke.
+ * Represents an abstract task in Sealriously.
  * A task has a description and a completion status.
  */
 public abstract class Task {
@@ -19,6 +19,12 @@ public abstract class Task {
      * @param description Description of the task.
      */
     public Task(String description) {
+        if (description == null) {
+            throw new IllegalArgumentException("Task description cannot be null.");
+        }
+        if (description.trim().isEmpty()) {
+            throw new IllegalArgumentException("Task description cannot be empty.");
+        }
         assert description != null : "Task description should not be null";
         assert !description.trim().isEmpty() : "Task description should not be empty";
 

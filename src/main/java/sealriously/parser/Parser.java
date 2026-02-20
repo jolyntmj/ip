@@ -1,15 +1,15 @@
-package duke.parser;
+package sealriously.parser;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-import duke.command.CommandType;
-import duke.exception.DukeException;
-import duke.task.Deadline;
-import duke.task.Event;
+import sealriously.command.CommandType;
+import sealriously.exception.SealriouslyException;
+import sealriously.task.Deadline;
+import sealriously.task.Event;
 
 /**
- * Parses user commands and determines what action Duke should take.
+ * Parses user commands and determines what action Sealriously should take.
  */
 public class Parser {
 
@@ -37,6 +37,9 @@ public class Parser {
      * @return Parsed {@code CommandType}. Returns {@code UNKNOWN} if the command is not recognised.
      */
     public CommandType parseCommandType(String input) {
+        if (input == null) {
+                return CommandType.UNKNOWN;
+        }
         assert input != null : "Parser.parseCommandType: input should not be null";
 
         String trimmed = input.trim();
@@ -64,24 +67,25 @@ public class Parser {
      * Format: tag INDEX #tag
      * Example: "tag 3 #fun" -> index=2, tag="#fun"
      */
-    public TagArgs parseTagArgs(String input) throws DukeException {
+    public TagArgs parseTagArgs(String input) throws SealriouslyException {
+        requireInputNotNull(input, "Usage: tag TASK_NUMBER #tag");
         assert input != null : "Parser.parseTagArgs: input should not be null";
 
         String[] parts = input.trim().split("\\s+", 3);
         if (parts.length < 3) {
-            throw new DukeException("Usage: tag TASK_NUMBER #tag");
+            throw new SealriouslyException("Usage: tag TASK_NUMBER #tag");
         }
 
         int index;
         try {
             index = Integer.parseInt(parts[1].trim()) - 1;
         } catch (NumberFormatException e) {
-            throw new DukeException("Task number must be a number.");
+            throw new SealriouslyException("Task number must be a number.");
         }
 
         String tag = parts[2].trim();
         if (tag.isEmpty()) {
-            throw new DukeException("Tag cannot be empty. Usage: tag TASK_NUMBER #tag");
+            throw new SealriouslyException("Tag cannot be empty. Usage: tag TASK_NUMBER #tag");
         }
 
         return new TagArgs(index, tag);
@@ -93,15 +97,16 @@ public class Parser {
      *
      * @param input Full user input containing a task number.
      * @return Zero based index of the task.
-     * @throws DukeException If the task number is missing or not a valid integer.
+     * @throws SealriouslyException If the task number is missing or not a valid integer.
      */
-    public int parseIndex(String input) throws DukeException {
+    public int parseIndex(String input) throws SealriouslyException {
+        requireInputNotNull(input, "Please specify a task number.");
         assert input != null : "Parser.parseIndex: input should not be null";
 
         String[] parts = input.split(" ", 2);
 
         if (parts.length < 2 || parts[1].trim().isEmpty()) {
-            throw new DukeException("Please specify a task number.");
+            throw new SealriouslyException("Please specify a task number.");
         }
 
         int index;
@@ -109,7 +114,7 @@ public class Parser {
         try {
             index = Integer.parseInt(parts[1].trim()) - 1;
         } catch (NumberFormatException e) {
-            throw new DukeException("Task number must be a number.");
+            throw new SealriouslyException("Task number must be a number.");
         }
         return index;
     }
@@ -120,16 +125,17 @@ public class Parser {
      *
      * @param input Full user input string.
      * @return Description portion of the todo command.
-     * @throws DukeException If the description is missing.
+     * @throws SealriouslyException If the description is missing.
      */
-    public String parseTodo(String input) throws DukeException {
+    public String parseTodo(String input) throws SealriouslyException {
+        requireInputNotNull(input, "The description of a todo cannot be empty!");
         assert input != null : "Parser.parseTodo: input should not be null";
         assert input.trim().toLowerCase().startsWith("todo") : "parseTodo called with non-todo input";
 
         String description = extractRemainder(input);
 
         if (description.isEmpty()) {
-            throw new DukeException("The description of a todo cannot be empty!");
+            throw new SealriouslyException("The description of a todo cannot be empty!");
         }
 
         return description;
@@ -142,9 +148,10 @@ public class Parser {
      *
      * @param input Full user input string.
      * @return Parsed {@link Deadline}.
-     * @throws DukeException If description or "DUE:" is missing, or the datetime format is invalid.
+     * @throws SealriouslyException If description or "DUE:" is missing, or the datetime format is invalid.
      */
-    public Deadline parseDeadline(String input) throws DukeException {
+    public Deadline parseDeadline(String input) throws SealriouslyException {
+        requireInputNotNull(input, "The description and DUE: of a deadline cannot be empty!");
         assert input != null : "Parser.parseDeadline: input should not be null";
         assert input.trim().toLowerCase().startsWith("deadline") : "parseDeadline called with non-deadline input";
     
@@ -165,9 +172,10 @@ public class Parser {
      *
      * @param input Full user input string.
      * @return Parsed {@link Event}.
-     * @throws DukeException If description, "START: ", or "DUE: " is missing, or the datetime format is invalid.
+     * @throws SealriouslyException If description, "START: ", or "DUE: " is missing, or the datetime format is invalid.
      */
-    public Event parseEvent(String input) throws DukeException {
+    public Event parseEvent(String input) throws SealriouslyException {
+        requireInputNotNull(input, "The START: and DUE: of an event cannot be empty!");
         assertIsEventCommand(input);
     
         String remainder = extractAndValidateEventRemainder(input);
@@ -185,16 +193,17 @@ public class Parser {
      *
      * @param input The full user input starting with {@code find}.
      * @return The trimmed keyword used for matching task descriptions.
-     * @throws DukeException If the find command does not contain a keyword.
+     * @throws SealriouslyException If the find command does not contain a keyword.
      */
-    public String parseDescription(String input) throws DukeException {
+    public String parseDescription(String input) throws SealriouslyException {
+        requireInputNotNull(input, "The description of a find cannot be empty!");
         assert input != null : "Parser.parseDescription: input should not be null";
         assert input.trim().toLowerCase().startsWith("find") : "parseDescription called with non-find input";
 
         String keyword = extractRemainder(input);
 
         if (keyword.isEmpty()) {
-            throw new DukeException("The description of a find cannot be empty!");
+            throw new SealriouslyException("The description of a find cannot be empty!");
         }
 
         return keyword;
@@ -210,38 +219,38 @@ public class Parser {
         return text.indexOf(token);
     }
 
-    private static String[] splitByToken(String text, String token) throws DukeException {
+    private static String[] splitByToken(String text, String token) throws SealriouslyException {
         // Allow flexible whitespace around the token and after it.
         // e.g. "abc DUE: 2026-02-20 1800"
         String regex = "\\s*" + token + "\\s*";
         String[] parts = text.split(regex, SPLIT_LIMIT_TWO_PARTS);
 
         if (parts.length < 2) {
-            throw new DukeException("Missing " + token + " in: " + text);
+            throw new SealriouslyException("Missing " + token + " in: " + text);
         }
         return parts;
     }
 
-    private static LocalDateTime parseDateTime(String raw) throws DukeException {
+    private static LocalDateTime parseDateTime(String raw) throws SealriouslyException {
         try {
             return LocalDateTime.parse(raw, FORMAT);
         } catch (DateTimeParseException e) {
-            throw new DukeException("Invalid date format. Use yyyy-MM-dd HHmm (e.g., 2019-12-02 1800).");
+            throw new SealriouslyException("Invalid date format. Use yyyy-MM-dd HHmm (e.g., 2019-12-02 1800).");
         }
     }
 
-    private static void validateEventTokens(String remainder, int startPos, int duePos) throws DukeException {
+    private static void validateEventTokens(String remainder, int startPos, int duePos) throws SealriouslyException {
         if (startPos < 0 && duePos < 0) {
-            throw new DukeException("The START: and DUE: of an event cannot be empty!");
+            throw new SealriouslyException("The START: and DUE: of an event cannot be empty!");
         }
         if (startPos < 0) {
-            throw new DukeException("The START: of an event cannot be empty!");
+            throw new SealriouslyException("The START: of an event cannot be empty!");
         }
         if (duePos < 0) {
-            throw new DukeException("The DUE: of an event cannot be empty!");
+            throw new SealriouslyException("The DUE: of an event cannot be empty!");
         }
         if (startPos > duePos) {
-            throw new DukeException("START: must appear before DUE: in an event.");
+            throw new SealriouslyException("START: must appear before DUE: in an event.");
         }
     }
 
@@ -250,10 +259,10 @@ public class Parser {
         assert input.trim().toLowerCase().startsWith("event") : "parseEvent called with non-event input";
     }
 
-    private String extractAndValidateEventRemainder(String input) throws DukeException {
+    private String extractAndValidateEventRemainder(String input) throws SealriouslyException {
         String remainder = extractRemainder(input);
         if (remainder.isEmpty()) {
-            throw new DukeException("The description, START:  and DUE:  of an event cannot be empty!");
+            throw new SealriouslyException("The description, START:  and DUE:  of an event cannot be empty!");
         }
         return remainder;
     }
@@ -270,7 +279,7 @@ public class Parser {
         }
     }
     
-    private EventParts parseEventParts(String remainder) throws DukeException {
+    private EventParts parseEventParts(String remainder) throws SealriouslyException {
         int startPos = indexOfToken(remainder, TOKEN_START);
         int duePos = indexOfToken(remainder, TOKEN_DUE);
         validateEventTokens(remainder, startPos, duePos);
@@ -286,11 +295,17 @@ public class Parser {
         return new EventParts(description, startRaw, endRaw);
     }
     
-    private static String requireNonEmpty(String text, String errorMessage) throws DukeException {
+    private static String requireNonEmpty(String text, String errorMessage) throws SealriouslyException {
         String trimmed = text.trim();
         if (trimmed.isEmpty()) {
-            throw new DukeException(errorMessage);
+            throw new SealriouslyException(errorMessage);
         }
         return trimmed;
+    }
+
+    private static void requireInputNotNull(String input, String message) throws SealriouslyException {
+        if (input == null) {
+            throw new SealriouslyException(message);
+        }
     }
 }

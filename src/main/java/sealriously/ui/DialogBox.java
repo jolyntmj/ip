@@ -1,4 +1,4 @@
-package duke.ui;
+package sealriously.ui;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -14,7 +14,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
-import duke.Duke;
+import sealriously.Sealriously;
 
 /**
  * Represents a dialog box consisting of an ImageView to represent the speaker's face
@@ -57,7 +57,7 @@ public class DialogBox extends HBox {
         return new DialogBox(text, img);
     }
 
-    public static DialogBox getDukeDialog(String text, Image img) {
+    public static DialogBox getSealriouslyDialog(String text, Image img) {
         var db = new DialogBox(text, img);
         db.flip();
         return db;
