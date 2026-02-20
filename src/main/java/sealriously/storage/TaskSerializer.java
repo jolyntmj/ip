@@ -61,10 +61,10 @@ public class TaskSerializer {
         if (task == null) {
             throw new SealriouslyException("Cannot save a null task.");
         }
-    
+
         String core = toCoreStorageString(task);
         String tagsField = toTagsField(task);
-    
+
         if (tagsField.isEmpty()) {
             return core;
         }
@@ -80,7 +80,7 @@ public class TaskSerializer {
      */
     private static String toCoreStorageString(Task task) throws SealriouslyException {
         String status = task.isDone() ? "[X]" : "[ ]";
-    
+
         if (task instanceof Todo) {
             return "T | " + status + " | " + task.getDescription();
         }
@@ -90,7 +90,7 @@ public class TaskSerializer {
         if (task instanceof Event) {
             return toEventStorageString((Event) task, status);
         }
-    
+
         throw new SealriouslyException("Unknown task type: " + task.getClass().getSimpleName());
     }
 
@@ -199,7 +199,7 @@ public class TaskSerializer {
      */
     private static boolean parseDoneFlag(String status, String originalLine) throws SealriouslyException {
         String s = status == null ? "" : status.trim();
-    
+
         if (s.equals("[X]") || s.equals("X")) {
             return true;
         }
@@ -246,7 +246,7 @@ public class TaskSerializer {
      * @throws SealriouslyException If required fields are missing/invalid.
      */
     private static Task parseDeadline(String description, String[] parts, String originalLine)
-        throws SealriouslyException {
+            throws SealriouslyException {
 
         if (parts.length != 4 && parts.length != 5) {
             throw new SealriouslyException("Invalid Deadline save line: " + originalLine);
@@ -264,7 +264,7 @@ public class TaskSerializer {
      * @throws SealriouslyException If required fields are missing/invalid.
     */
     private static Task parseEvent(String description, String[] parts, String originalLine)
-        throws SealriouslyException {
+            throws SealriouslyException {
 
         if (parts.length != 5 && parts.length != 6) {
             throw new SealriouslyException("Invalid Event save line: " + originalLine);
@@ -283,7 +283,7 @@ public class TaskSerializer {
      * @throws SealriouslyException If parsing fails.
      */
     private static LocalDateTime parseDateTime(String raw, String originalLine)
-        throws SealriouslyException {
+            throws SealriouslyException {
 
         String trimmed = raw == null ? "" : raw.trim();
 

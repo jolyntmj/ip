@@ -63,7 +63,7 @@ public class Deadline extends Task {
      *
      * @return Due date/time.
      */
-        public LocalDateTime getBy() {
-            return by;
-        }
+    public LocalDateTime getBy() {
+        return by;
+    }
 }

@@ -1,1 +1,4 @@
-E |   | burn book | 2026-01-01T00:00 | 2026-02-01T23:59 | #die
+E | [ ] | burn book | 2026-01-01 0000 | 2026-02-01 2359
+D | [X] | death note | 2026-01-01 0000
+T | [ ] | throw book | #dirty
+T | [ ] | write book
