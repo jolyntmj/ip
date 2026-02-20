@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Scanner;
 
 import sealriously.exception.SealriouslyException;
-import sealriously.storage.TaskSerializer;
 import sealriously.task.Task;
 import sealriously.task.TaskList;
 
@@ -49,15 +48,6 @@ public class Storage {
     private boolean lastLoadHadCorruptedLines = false;
 
     /**
-     * Returns whether the last load operation encountered corrupted lines that were skipped.
-     *
-     * @return true if at least one corrupted line was detected and skipped.
-     */
-    public boolean lastLoadHadCorruptedLines() {
-        return lastLoadHadCorruptedLines;
-    }
-
-    /**
      * Creates a storage component that reads/writes tasks from/to the given file path.
      *
      * @param filePath Save file path.
@@ -74,6 +64,15 @@ public class Storage {
     }
 
     /**
+     * Returns whether the last load operation encountered corrupted lines that were skipped.
+     *
+     * @return true if at least one corrupted line was detected and skipped.
+     */
+    public boolean lastLoadHadCorruptedLines() {
+        return lastLoadHadCorruptedLines;
+    }
+
+    /**
      * Loads tasks from disk.
      *
      * @return List of tasks loaded from storage.
@@ -81,7 +80,7 @@ public class Storage {
      */
     public List<Task> load() throws SealriouslyException {
         lastLoadHadCorruptedLines = false;
-    
+
         File file = new File(filePath);
         try {
             ensureFileExists(file);
@@ -90,7 +89,7 @@ public class Storage {
             throw new SealriouslyException("Error loading saved data: " + e.getMessage());
         }
     }
-    
+
     /**
      * Reads task lines from a file and converts them into Task objects.
      *
@@ -100,7 +99,7 @@ public class Storage {
      */
     private List<Task> readTasksFromFile(File file) throws IOException {
         List<Task> tasks = new ArrayList<>();
-    
+
         try (Scanner scanner = new Scanner(file)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine().trim();
@@ -112,7 +111,7 @@ public class Storage {
         }
         return tasks;
     }
-    
+
     /**
      * Attempts to parse and add a task line into the list.
      * Corrupted lines are skipped and recorded.
@@ -128,7 +127,7 @@ public class Storage {
             // Skip corrupted lines but continue.
         }
     }
-    
+
     /**
      * Saves the provided task list to disk.
      *
@@ -140,7 +139,7 @@ public class Storage {
             throw new SealriouslyException("Nothing to save (task list is null).");
         }
         assert tasks != null : "Storage.save: tasks should not be null";
-    
+
         File file = new File(filePath);
         try {
             ensureFileExists(file);
@@ -149,7 +148,7 @@ public class Storage {
             throw new SealriouslyException("Error saving data: " + e.getMessage());
         }
     }
-    
+
     /**
      * Writes the tasks into the given file in storage format.
      *
@@ -166,7 +165,7 @@ public class Storage {
             }
         }
     }
-    
+
     /**
      * Ensures the storage file and its parent directories exist.
      *
@@ -181,5 +180,5 @@ public class Storage {
         if (!file.exists()) {
             file.createNewFile();
         }
-    }    
+    }
 }

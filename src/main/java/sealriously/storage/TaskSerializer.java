@@ -193,7 +193,9 @@ public class TaskSerializer {
      * @return Parsed Task.
      * @throws SealriouslyException If required fields are missing/invalid.
      */
-    private static Task parseDeadline(String description, String[] parts, String originalLine) throws SealriouslyException {
+    private static Task parseDeadline(String description, String[] parts,
+        String originalLine) throws SealriouslyException {
+
         if (parts.length != 4) {
             throw new SealriouslyException("Invalid Deadline save line: " + originalLine);
         }
@@ -208,8 +210,10 @@ public class TaskSerializer {
      * @param originalLine Original line (for error reporting).
      * @return Parsed Task.
      * @throws SealriouslyException If required fields are missing/invalid.
-     */
-    private static Task parseEvent(String description, String[] parts, String originalLine) throws SealriouslyException {
+    */
+    private static Task parseEvent(String description, String[] parts,
+        String originalLine) throws SealriouslyException {
+
         if (parts.length != 5) {
             throw new SealriouslyException("Invalid Event save line: " + originalLine);
         }

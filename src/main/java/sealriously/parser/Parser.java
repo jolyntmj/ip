@@ -20,10 +20,26 @@ public class Parser {
 
     private static final int SPLIT_LIMIT_TWO_PARTS = 2;
 
+    /**
+     * Container class representing the parsed arguments of a tag command.
+     *
+     * It stores:
+     * - The zero-based index of the task to be tagged.
+     * - The raw tag string provided by the user (e.g., "#fun").
+     *
+     * This class is used internally by the Parser to pass structured
+     * tag command data to the main application logic.
+     */
     public static class TagArgs {
-        public final int index;     // zero-based
-        public final String tag;    // raw tag token, e.g. "#fun"
+        public final int index; // zero-based
+        public final String tag; // raw tag token, e.g. "#fun"
 
+        /**
+         * Constructs a TagArgs object containing parsed tag command data.
+         *
+         * @param index Zero-based index of the task to be tagged.
+         * @param tag   Raw tag string provided by the user (e.g., "#fun").
+         */
         public TagArgs(int index, String tag) {
             this.index = index;
             this.tag = tag;
@@ -38,7 +54,7 @@ public class Parser {
      */
     public CommandType parseCommandType(String input) {
         if (input == null) {
-                return CommandType.UNKNOWN;
+            return CommandType.UNKNOWN;
         }
         assert input != null : "Parser.parseCommandType: input should not be null";
 
@@ -154,17 +170,17 @@ public class Parser {
         requireInputNotNull(input, "The description and DUE: of a deadline cannot be empty!");
         assert input != null : "Parser.parseDeadline: input should not be null";
         assert input.trim().toLowerCase().startsWith("deadline") : "parseDeadline called with non-deadline input";
-    
+
         String remainder = requireNonEmpty(extractRemainder(input),
                 "The description and DUE: of a deadline cannot be empty!");
-    
+
         String[] parts = splitByToken(remainder, TOKEN_DUE);
-    
+
         String description = requireNonEmpty(parts[0], "The description of a deadline cannot be empty!");
         String byRaw = requireNonEmpty(parts[1], "The DUE: of a deadline cannot be empty!");
-    
+
         return new Deadline(description, parseDateTime(byRaw));
-    }    
+    }
 
     /**
      * Parses an event command into an {@link Event} object.
@@ -177,17 +193,17 @@ public class Parser {
     public Event parseEvent(String input) throws SealriouslyException {
         requireInputNotNull(input, "The START: and DUE: of an event cannot be empty!");
         assertIsEventCommand(input);
-    
+
         String remainder = extractAndValidateEventRemainder(input);
-    
+
         EventParts parts = parseEventParts(remainder);
-    
+
         LocalDateTime start = parseDateTime(parts.startRaw);
         LocalDateTime end = parseDateTime(parts.endRaw);
-    
+
         return new Event(parts.description, start, end);
     }
-    
+
     /**
      * Extracts the description keyword from a {@code find} command.
      *
@@ -220,7 +236,6 @@ public class Parser {
         String[] parts = input.trim().split("\\s+", SPLIT_LIMIT_TWO_PARTS);
         return (parts.length < 2) ? "" : parts[1].trim();
     }
-    
 
     /**
      * Finds the index position of a token within the given text.
@@ -317,7 +332,7 @@ public class Parser {
         }
         return remainder;
     }
-    
+
     /**
      * Immutable container for the parsed components of an event command.
      * Holds description, start raw string and end raw string before date parsing.
@@ -326,7 +341,7 @@ public class Parser {
         private final String description;
         private final String startRaw;
         private final String endRaw;
-    
+
         /**
          * Creates an EventParts container.
          *
@@ -340,7 +355,7 @@ public class Parser {
             this.endRaw = endRaw;
         }
     }
-    
+
     /**
      * Parses the event remainder into description, start and end portions.
      *
@@ -352,18 +367,18 @@ public class Parser {
         int startPos = indexOfToken(remainder, TOKEN_START);
         int duePos = indexOfToken(remainder, TOKEN_DUE);
         validateEventTokens(remainder, startPos, duePos);
-    
+
         String[] descAndStart = splitByToken(remainder, TOKEN_START);
         String description = requireNonEmpty(descAndStart[0], "The description of an event cannot be empty!");
         String afterStart = descAndStart[1].trim();
-    
+
         String[] startAndEnd = splitByToken(afterStart, TOKEN_DUE);
         String startRaw = requireNonEmpty(startAndEnd[0], "The START: of an event cannot be empty!");
         String endRaw = requireNonEmpty(startAndEnd[1], "The DUE: of an event cannot be empty!");
-    
+
         return new EventParts(description, startRaw, endRaw);
     }
-    
+
     /**
      * Ensures the given text is non-empty after trimming.
      *

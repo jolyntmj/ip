@@ -1,8 +1,7 @@
 package sealriously;
 
-import sealriously.ui.Main;
-
 import javafx.application.Application;
+import sealriously.ui.Main;
 
 /**
  * A launcher class to workaround classpath issues.
