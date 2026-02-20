@@ -2,7 +2,7 @@
 
 sealriously is a simple task manager chatbot that helps you manage todos, deadlines, and events efficiently.
 
-![sealriously UI](Ui.png)
+![sealriously UI](docs/Ui.png)
 
 ---
 
